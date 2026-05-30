@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Auto-generated / cache
+*.log
+*.tmp
+tool_state
+*.zwc
+
+# Secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+
+# Android (from .config)
+.android/

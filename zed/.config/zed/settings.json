@@ -1,0 +1,135 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "proxy": "",
+  "file_finder": {
+    "modal_max_width": "large"
+  },
+  "agent_buffer_font_size": 13.0,
+  "debugger": {
+    "dock": "bottom",
+  },
+  "indent_guides": {
+    "line_width": 1,
+    "enabled": false,
+  },
+  "fast_scroll_sensitivity": 4.0,
+  "buffer_line_height": {
+    "custom": 2.0,
+  },
+  "agent_servers": {
+    "gemini": {
+      "type": "registry"
+    },
+    "opencode": {
+      "type": "registry"
+    },
+    "cursor": {
+      "default_config_options": {
+        "mode": "agent"
+      },
+      "favorite_config_option_values": {
+        "model": [
+          "claude-opus-4-6[thinking=true,context=200k,effort=high,fast=false]",
+          "claude-opus-4-7[thinking=true,context=300k,effort=xhigh]",
+          "composer-2[fast=true]",
+          "claude-sonnet-4-6[thinking=true,context=200k,effort=medium]"
+        ],
+      },
+      "type": "registry",
+    },
+    "claude-acp": {
+      "type": "registry",
+    },
+  },
+  "buffer_font_weight": 500.0,
+  "project_panel": {
+    "dock": "left",
+  },
+  "outline_panel": {
+    "dock": "left",
+  },
+  "collaboration_panel": {
+    "dock": "left",
+  },
+  "agent": {
+    "thinking_display": "auto",
+    "default_profile": "write",
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-6",
+      "enable_thinking": true,
+      "effort": "medium",
+    },
+    "sidebar_side": "right",
+    "dock": "right",
+    "favorite_models": [
+      {
+        "provider": "zed.dev",
+        "model": "claude-sonnet-4-6",
+        "enable_thinking": true,
+        "effort": "medium"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gpt-5.5",
+        "enable_thinking": true,
+        "effort": "medium"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gemini-3.1-pro-preview",
+        "enable_thinking": false
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gemini-3-flash",
+        "enable_thinking": false
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gpt-5.3-codex",
+        "enable_thinking": true,
+        "effort": "medium"
+      }
+    ],
+    "model_parameters": [],
+  },
+  "git_panel": {
+    "tree_view": true,
+    "dock": "left",
+  },
+  "diff_view_style": "unified",
+  "terminal": {
+    "font_family": "JetBrains Mono NL",
+    "font_weight": 500.0,
+    "font_size": 13.0,
+    "blinking": "on",
+    "cursor_shape": "block",
+  },
+  "icon_theme": "Soft Charmed Icons",
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 500,
+    },
+  },
+  "vim_mode": false,
+  "cursor_shape": "bar",
+  "agent_ui_font_size": 13.0,
+  "ui_font_weight": 500.0,
+  "ui_font_family": "Fira Code",
+  "buffer_font_family": "JetBrains Mono",
+  "ui_font_size": 14.0,
+  "buffer_font_size": 13.0,
+  "theme": {
+    "mode": "system",
+    "light": "Catppuccin Mocha",
+    "dark": "Catppuccin Mocha (Blur) [Light]",
+  },
+}

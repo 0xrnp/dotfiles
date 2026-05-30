@@ -1,0 +1,113 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(ls)",
+      "Shell(cd)",
+      "Shell(git diff)",
+      "Shell(head)",
+      "Shell(grep)",
+      "Shell(git show)",
+      "Shell(sed)",
+      "Shell(npx tsc)",
+      "Shell(node_modules/.bin/mocha)",
+      "Shell(tail)",
+      "Shell(git log)",
+      "Shell(npx mocha)",
+      "Shell(rg)",
+      "Shell(./node_modules/.bin/mocha)",
+      "Shell(npm test)"
+    ],
+    "deny": []
+  },
+  "version": 1,
+  "editor": {
+    "vimMode": false
+  },
+  "notifications": true,
+  "hints": true,
+  "rewind": false,
+  "suggestNextPrompt": false,
+  "model": {
+    "modelId": "default",
+    "displayModelId": "auto",
+    "displayName": "Auto",
+    "displayNameShort": "Auto",
+    "aliases": [
+      "auto"
+    ],
+    "maxMode": false
+  },
+  "hasChangedDefaultModel": true,
+  "maxMode": false,
+  "modelParameters": {
+    "composer-2": [
+      {
+        "id": "fast",
+        "value": "true"
+      }
+    ],
+    "default": [],
+    "claude-sonnet-4-6": [
+      {
+        "id": "thinking",
+        "value": "true"
+      },
+      {
+        "id": "context",
+        "value": "200k"
+      },
+      {
+        "id": "effort",
+        "value": "medium"
+      }
+    ],
+    "claude-opus-4-6": [
+      {
+        "id": "thinking",
+        "value": "true"
+      },
+      {
+        "id": "context",
+        "value": "200k"
+      },
+      {
+        "id": "effort",
+        "value": "high"
+      },
+      {
+        "id": "fast",
+        "value": "false"
+      }
+    ]
+  },
+  "selectedModel": {
+    "modelId": "default",
+    "parameters": []
+  },
+  "privacyCache": {
+    "ghostMode": true,
+    "privacyMode": 2,
+    "updatedAt": 1780071868669
+  },
+  "authInfo": {
+    "email": "rudra.narayan@asbl.in",
+    "displayName": "",
+    "teamId": 19645305,
+    "teamName": "ASBL",
+    "userId": 321460698,
+    "authId": "auth0|user_01KH0QAY36NR23BVY5P69H9BVH"
+  },
+  "network": {
+    "useHttp1ForAgent": false
+  },
+  "approvalMode": "allowlist",
+  "sandbox": {
+    "mode": "disabled",
+    "networkAccess": "user_config_with_defaults"
+  },
+  "runEverythingSettingsPromptStreak": 0,
+  "attribution": {
+    "attributeCommitsToAgent": true,
+    "attributePRsToAgent": true
+  }
+}
