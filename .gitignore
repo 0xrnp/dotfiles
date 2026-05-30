@@ -61,3 +61,6 @@ opencode/.config/opencode/skills/.DS_Store
 
 # MDB database files
 *.mdb
+tmux/.config/tmux/plugins/
+tmux/.config/tmux/tmux.conf.backup
+tmux/.config/tmux/tmux.conf.bak
