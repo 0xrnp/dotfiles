@@ -19,3 +19,22 @@ tool_state
 
 # Android (from .config)
 .android/
+
+# Cursor — auto-generated session data
+cursor/.config/cursor/acp-sessions/
+cursor/.config/cursor/User/workspaceStorage/
+cursor/.config/cursor/User/History/
+cursor/.config/cursor/logs/
+cursor/.config/cursor/CachedData/
+cursor/.config/cursor/CachedExtensions/
+
+# Zed — auto-generated
+zed/.config/zed/conversations/
+zed/.config/zed/embeddings/
+zed/.config/zed/db/
+
+# General
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
