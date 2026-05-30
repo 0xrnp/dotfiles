@@ -38,3 +38,26 @@ zed/.config/zed/db/
 *.db-shm
 *.db-wal
 *.sqlite
+
+# Cursor — additional cache files
+cursor/.config/cursor/statsig-cache.json
+cursor/.config/cursor/cli-config.json
+cursor/.config/cursor/acp-config.json
+
+# Zed — prompt database
+zed/.config/zed/prompts/
+
+# SwiftPM — symlinks to system paths, not real config
+swiftpm/.config/swiftpm/cache
+swiftpm/.config/swiftpm/configuration
+swiftpm/.config/swiftpm/security
+
+# Flutter auto-generated
+flutter/.config/flutter/tool_state
+
+# opencode
+opencode/.config/opencode/.DS_Store
+opencode/.config/opencode/skills/.DS_Store
+
+# MDB database files
+*.mdb
