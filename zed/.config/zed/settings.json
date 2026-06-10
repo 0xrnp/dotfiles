@@ -32,6 +32,7 @@
     },
     "cursor": {
       "default_config_options": {
+        "model": "claude-sonnet-4-6[thinking=true,context=200k,effort=medium]",
         "mode": "agent"
       },
       "favorite_config_option_values": {
@@ -39,7 +40,8 @@
           "claude-opus-4-6[thinking=true,context=200k,effort=high,fast=false]",
           "claude-opus-4-7[thinking=true,context=300k,effort=xhigh]",
           "composer-2[fast=true]",
-          "claude-sonnet-4-6[thinking=true,context=200k,effort=medium]"
+          "claude-sonnet-4-6[thinking=true,context=200k,effort=medium]",
+          "claude-opus-4-8[thinking=true,context=300k,effort=high,fast=false]"
         ],
       },
       "type": "registry",
