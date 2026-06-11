@@ -108,3 +108,4 @@ function y() {
 #     exec zellij attach -c
 # fi
 
+fastfetch

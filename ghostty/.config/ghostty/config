@@ -24,7 +24,7 @@ window-title-font-family = JetBrains Mono
 window-theme = dark
 window-subtitle = working-directory
 
-window-decoration = false
+window-decoration = true
 window-padding-balance = true
 
 macos-titlebar-style = hidden
