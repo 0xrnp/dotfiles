@@ -7,6 +7,12 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "status_bar": {
+    "show_active_file": true
+  },
+  "title_bar": {
+    "show_menus": true
+  },
   "proxy": "",
   "file_finder": {
     "modal_max_width": "large"
@@ -32,7 +38,7 @@
     },
     "cursor": {
       "default_config_options": {
-        "model": "claude-sonnet-4-6[thinking=true,context=200k,effort=medium]",
+        "model": "default[]",
         "mode": "agent"
       },
       "favorite_config_option_values": {
@@ -67,7 +73,7 @@
       "provider": "zed.dev",
       "model": "claude-sonnet-4-6",
       "enable_thinking": true,
-      "effort": "medium",
+      "effort": "high",
     },
     "sidebar_side": "right",
     "dock": "right",
@@ -76,7 +82,7 @@
         "provider": "zed.dev",
         "model": "claude-sonnet-4-6",
         "enable_thinking": true,
-        "effort": "medium"
+        "effort": "high"
       },
       {
         "provider": "zed.dev",

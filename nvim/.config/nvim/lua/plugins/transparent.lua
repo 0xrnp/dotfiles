@@ -36,9 +36,26 @@ return {
         "NeoTreeNormalNC",
         "NeoTreeWinSeparator",
       },
+      -- Plugin-specific and floating window groups
+      extra_groups = {
+        "NormalFloat", -- Essential for floating windows like Telescope
+        "FloatBorder",
+
+        -- Telescope
+        "TelescopeNormal",
+        "TelescopeBorder",
+        "TelescopePromptBorder",
+        "TelescopePromptNormal",
+        "TelescopeResultsBorder",
+        "TelescopeResultsNormal",
+        "TelescopePreviewBorder",
+        "TelescopePreviewNormal",
+      },
       exclude_groups = {},
     })
     require("transparent").clear_prefix("transparent")
+    require("transparent").clear_prefix("BufferLine")
+    require("transparent").clear_prefix("Telescope")
     vim.g.transparent_enabled = true -- Enable for themes that check this
   end,
 }

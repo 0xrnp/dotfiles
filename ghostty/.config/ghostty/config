@@ -13,7 +13,7 @@ term = xterm-ghostty
 
 font-family = JetBrainsMono Nerd Font
 font-style = Medium
-font-size = 14
+font-size = 13
 
 window-title-font-family = JetBrains Mono
 
@@ -43,6 +43,7 @@ background-blur = true
 
 cursor-style = block
 cursor-style-blink = true
+adjust-cell-height = 22%
 
 # ==============================================================================
 # PERFORMANCE

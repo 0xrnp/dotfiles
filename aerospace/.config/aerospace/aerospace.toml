@@ -126,12 +126,13 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 0'
 alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
 alt-b = 'workspace B'
 alt-c = 'workspace C'
 alt-d = 'workspace D'
 alt-e = 'workspace E'
-alt-i = 'workspace I'
 alt-m = 'workspace M'
 alt-n = 'workspace N'
 alt-o = 'workspace O'
@@ -156,12 +157,12 @@ alt-shift-6 = 'move-node-to-workspace 6'
 alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 0'
 alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
 alt-shift-c = 'move-node-to-workspace C'
 alt-shift-d = 'move-node-to-workspace D'
 alt-shift-e = 'move-node-to-workspace E'
-alt-shift-i = 'move-node-to-workspace I'
 alt-shift-m = 'move-node-to-workspace M'
 alt-shift-n = 'move-node-to-workspace N'
 alt-shift-o = 'move-node-to-workspace O'
@@ -198,6 +199,8 @@ O = ['secondary', 'main']
 I = ['secondary', 'main']
 M = ['secondary', 'main']
 N = ['secondary', 'main']
+9 = ['secondary', 'main']
+0 = ['secondary', 'main']
 
 [mode.resize.binding]
 h = 'resize width -50'
@@ -289,7 +292,7 @@ run = 'move-node-to-workspace P'
 
 [[on-window-detected]]
 if.app-id = "md.obsidian"
-run = 'move-node-to-workspace I'
+run = 'move-node-to-workspace 0'
 
 [[on-window-detected]]
 if.app-id = "company.thebrowser.dia"

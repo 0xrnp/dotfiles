@@ -65,3 +65,7 @@ vim.keymap.set("n", "<leader>sv", function()
     end,
   })
 end, { desc = "Split vertical with Telescope" })
+
+vim.keymap.set("n", "<leader>un", function()
+  Snacks.notifier.show_history()
+end, { desc = "Notification History" })
