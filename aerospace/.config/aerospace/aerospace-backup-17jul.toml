@@ -9,16 +9,6 @@
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
 after-login-command = []
 
-# See: https://nikitabobko.github.io/AeroSpace/guide#config-version
-config-version = 2
-
-# Keep all workspaces alive even when empty so AeroSpace never auto-creates
-# fallback workspaces (e.g. "10", "11") on unassigned monitors at startup.
-# See: https://nikitabobko.github.io/AeroSpace/guide#config-version-2
-persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
-                         "A", "B", "C", "D", "E", "I", "M", "N", "O", "P",
-                         "Q", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
@@ -30,10 +20,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
 #
 after-startup-command = [
   'exec-and-forget borders active_color=0xff7dc4e4 inactive_color=0xffcba6f7 width=6.0 hidpi=on',
-  'workspace 1',   # main (laptop)
-  'workspace P',   # left DELL
-  'workspace 0',   # right DELL
-  'workspace 1',   # refocus back to main
+  'workspace 1',
 ]
 
 # Start AeroSpace at login
@@ -139,9 +126,6 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
-alt-6 = 'workspace 6'
-alt-7 = 'workspace 7'
-alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace 0'
 alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
@@ -205,45 +189,18 @@ alt-leftSquareBracket = 'workspace-back-and-forth'
 alt-shift-semicolon = 'mode service'
 
 [workspace-to-monitor-force-assignment]
-# Pinned by name/keyword so it's robust to monitor reordering or dock/undock.
-#   'main'                = Built-in Retina Display (laptop)
-#   'DELL P2425H \(2\)'   = left DELL
-#   'DELL P2425H \(1\)'   = right DELL
-
-# --- main (laptop) ---
 1 = 'main'
 2 = 'main'
 3 = 'main'
 4 = 'main'
 5 = 'main'
-A = 'main'
-B = 'main'
-C = 'main'
-D = 'main'
-E = 'main'
-Q = 'main'
-S = 'main'
-T = 'main'
-V = 'main'
-W = 'main'
-X = 'main'
-Z = 'main'
-
-# --- left DELL (fallback: right DELL, then main) ---
-6 = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-7 = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-I = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-M = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-N = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-O = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-P = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-U = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-Y = ['DELL P2425H \(2\)', 'DELL P2425H \(1\)', 'main']
-
-# --- right DELL (fallback: left DELL, then main) ---
-8 = ['DELL P2425H \(1\)', 'DELL P2425H \(2\)', 'main']
-9 = ['DELL P2425H \(1\)', 'DELL P2425H \(2\)', 'main']
-0 = ['DELL P2425H \(1\)', 'DELL P2425H \(2\)', 'main']
+P = ['secondary', 'main']
+O = ['secondary', 'main']
+I = ['secondary', 'main']
+M = ['secondary', 'main']
+N = ['secondary', 'main']
+9 = ['secondary', 'main']
+0 = ['secondary', 'main']
 
 [mode.resize.binding]
 h = 'resize width -50'

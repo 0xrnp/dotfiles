@@ -1,0 +1,194 @@
+# =============================================================================
+# ALACRITTY FULLSCREEN "BEST MODE" - CATPPUCCIN MOCHA
+# =============================================================================
+
+[general]
+live_config_reload = true
+
+# ==============================================================================
+# WINDOW & DISPLAY
+# ==============================================================================
+[window]
+startup_mode = "Windowed"
+opacity = 0.50
+blur = true
+decorations = "buttonless"
+padding = { x = 16, y = 16 }
+dynamic_padding = true
+dynamic_title = true
+
+# ==============================================================================
+# FONT (Matched to Ghostty settings)
+# ==============================================================================
+[font]
+size = 13.0
+builtin_box_drawing = true
+# Adjusting cell height for comfortable reading during long coding sessions
+# (Must be declared before font.normal/bold/italic in TOML)
+offset = { x = 0, y = 2 }
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Medium"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+# ==============================================================================
+# SCROLLING & PERFORMANCE
+# ==============================================================================
+[scrolling]
+# Expanded to handle massive logs from containers and builds
+history = 100000
+multiplier = 3
+
+[env]
+TERM = "xterm-256color"
+
+# ==============================================================================
+# CURSOR & SELECTION
+# ==============================================================================
+[cursor]
+style = { shape = "Block", blinking = "Always" }
+blink_interval = 500
+unfocused_hollow = true
+
+[mouse]
+hide_when_typing = true
+
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+# ==============================================================================
+# HARDCODED CATPPUCCIN MOCHA THEME
+# ==============================================================================
+[colors.primary]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+dim_foreground = "#7f849c"
+bright_foreground = "#cdd6f4"
+
+[colors.cursor]
+text = "#1e1e2e"
+cursor = "#f5e0dc"
+
+[colors.selection]
+text = "#cdd6f4"
+background = "#585b70"
+
+[colors.normal]
+black = "#45475a"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#a6adc8"
+
+[colors.bright]
+black = "#585b70"
+red = "#f37799"
+green = "#89d88b"
+yellow = "#ebd391"
+blue = "#74a8fc"
+magenta = "#f2aede"
+cyan = "#6bd7ca"
+white = "#bac2de"
+
+[colors.dim]
+black = "#45475a"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#a6adc8"
+
+# ==============================================================================
+# REGEX HINTS
+# ==============================================================================
+# Standard URLs (Ctrl + Shift + U)
+[[hints.enabled]]
+command = "xdg-open"                            # macOS users change to "open"
+hyperlinks = true
+post_processing = true
+regex = "(https?://|git@|git://)[^\\s]+"
+binding = { key = "U", mods = "Control|Shift" }
+
+# Infrastructure / Backend Hint: AWS ARNs & Git/Docker SHAs (Ctrl + Shift + H)
+[[hints.enabled]]
+command = { program = "sh", args = [
+  "-c",
+  "echo -n {} | xclip -sel clip",
+] } # macOS users change xclip to pbcopy
+regex = "(arn:aws:[a-zA-Z0-9-]+:[a-z0-9-]+:[0-9]{12}:[a-zA-Z0-9-/_]+|[a-f0-9]{40}|[a-f0-9]{64})"
+binding = { key = "H", mods = "Control|Shift" }
+
+# ==============================================================================
+# ZERO-MOUSE KEYBINDS
+# ==============================================================================
+# Toggle Fullscreen dynamically
+[[keyboard.bindings]]
+key = "F11"
+action = "ToggleFullscreen"
+
+# Spawn new instance in current working directory (inherits PWD)
+[[keyboard.bindings]]
+key = "Return"
+mods = "Control|Shift"
+action = "SpawnNewInstance"
+
+# Log Search Engine
+[[keyboard.bindings]]
+key = "F"
+mods = "Control|Shift"
+mode = "~Search"
+action = "SearchForward"
+
+[[keyboard.bindings]]
+key = "B"
+mods = "Control|Shift"
+mode = "~Search"
+action = "SearchBackward"
+
+# Vi Mode (The ultimate power feature)
+[[keyboard.bindings]]
+key = "Space"
+mods = "Control|Shift"
+mode = "~Search"
+action = "ToggleViMode"
+
+# Standard Clipboard
+[[keyboard.bindings]]
+key = "C"
+mods = "Control|Shift"
+action = "Copy"
+
+[[keyboard.bindings]]
+key = "V"
+mods = "Control|Shift"
+action = "Paste"
+
+# Dynamic Font Scaling
+[[keyboard.bindings]]
+key = "Equals"
+mods = "Control"
+action = "IncreaseFontSize"
+
+[[keyboard.bindings]]
+key = "Minus"
+mods = "Control"
+action = "DecreaseFontSize"
+
+[[keyboard.bindings]]
+key = "Key0"
+mods = "Control"
+action = "ResetFontSize"

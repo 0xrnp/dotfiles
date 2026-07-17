@@ -49,7 +49,7 @@ alias vim=nvim
 alias vi=nvim
 alias ff='nvim $(fzf -m --preview="bat --color=always {}")'
 alias tvf='nvim $(tv files)'
-
+alias tx=tmux
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
@@ -66,10 +66,22 @@ alias cd=z
 eval "$(atuin init zsh)"
 
 # 4. nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
+# 4. Lazy-Load NVM (Drastically speeds up terminal startup)
+export NVM_DIR="$HOME/.nvm"
+nvm() {
+    unset -f nvm node npm npx yarn
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm "$@"
+}
+node() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; node "$@"; }
+npm() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm "$@"; }
+npx() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npx "$@"; }
 
 # 5. Zsh Autosuggestions (Using hardcoded Homebrew path)
 source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
@@ -85,9 +97,19 @@ export FZF_DEFAULT_OPTS="\
 source <(fzf --zsh)
 
 # 7. Completions (Optimized lookup)
+# FPATH=$HOMEBREW_PREFIX/share/zsh-completions:$FPATH
+# autoload -Uz compinit
+# compinit -d "$XDG_CONFIG_HOME/zsh/zcompdump-$ZSH_VERSION" # Saves the dump file away from home root
+
+# 7. Completions (Optimized lookup & 24hr cache)
 FPATH=$HOMEBREW_PREFIX/share/zsh-completions:$FPATH
 autoload -Uz compinit
-compinit -d "$XDG_CONFIG_HOME/zsh/zcompdump-$ZSH_VERSION" # Saves the dump file away from home root
+# Only rebuild zcompdump once a day
+if [[ -n "$XDG_CONFIG_HOME/zsh/zcompdump-$ZSH_VERSION"(#qN.mh+24) ]]; then
+  compinit -d "$XDG_CONFIG_HOME/zsh/zcompdump-$ZSH_VERSION"
+else
+  compinit -C -d "$XDG_CONFIG_HOME/zsh/zcompdump-$ZSH_VERSION"
+fi
 
 # --- Functions & Multiplexers ---
 
@@ -108,4 +130,15 @@ function y() {
 #     exec zellij attach -c
 # fi
 
-fastfetch
+# fastfetch (Run if launched in Ghostty or Alacritty)
+if [[ -n "$GHOSTTY_RESOURCES_DIR" || -n "$ALACRITTY_WINDOW_ID" ]]; then
+  fastfetch
+fi
+
+# >>> otty shell integration >>>
+# Added by Otty — toggle in Settings > Shell > Shell Integration.
+# Inert unless launched by Otty (it sets $OTTY_SHELL_INTEGRATION).
+if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.zsh" ]; then
+  . "$OTTY_SHELL_INTEGRATION/otty-integration.zsh"
+fi
+# <<< otty shell integration <<<
