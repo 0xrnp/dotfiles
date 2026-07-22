@@ -10,7 +10,7 @@ onboarding = false         # Skips the first-run wizard
 [theme]
 # You can customize colors here. Herdr natively supports standard terminal 
 # colors, but you can define a preset like "nord" if you prefer.
-name = "default"
+name = "catppuccin"        # Match Alacritty's Catppuccin Mocha
 
 # ==========================
 # ===    Key Bindings    ===
@@ -36,9 +36,26 @@ new_tab = "prefix+c"
 next_tab = "prefix+n"
 previous_tab = "prefix+p"
 new_workspace = "prefix+shift+n"
+switch_workspace = "prefix+shift+1..9"   # Jump directly to workspace N
 close_pane = "prefix+x"
 
 # 5. Herdr-Specific UI
 # Toggle the sidebar that shows your AI agents' status (blocked, working, done)
 toggle_sidebar = "prefix+b"
 goto = "prefix+g"
+
+# 6. Agent Navigation — jump between AI agent panes
+previous_agent = "prefix+["
+next_agent = "prefix+]"
+
+# 7. Custom Commands — lazygit in a popup
+[[keys.command]]
+key = "prefix+ctrl+g"
+type = "popup"
+command = "lazygit"
+width = "80%"
+height = "80%"
+
+[ui]
+# Ask for a name when creating a workspace (one workspace per repo workflow)
+prompt_new_workspace_name = true

@@ -64,3 +64,11 @@ opencode/.config/opencode/skills/.DS_Store
 tmux/.config/tmux/plugins/
 tmux/.config/tmux/tmux.conf.backup
 tmux/.config/tmux/tmux.conf.bak
+
+# Herdr — runtime state (logs already covered by *.log)
+herdr/.config/herdr/session.json
+herdr/.config/herdr/release-notes.json
+herdr/.config/herdr/*.sock
+
+# Herdr-generated opencode plugin (written into the stowed dir)
+opencode/.config/opencode/plugins/herdr-agent-state.js
