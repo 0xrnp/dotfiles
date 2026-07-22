@@ -1,0 +1,44 @@
+# ==========================
+# ===   Herdr Settings   ===
+# ==========================
+onboarding = false         # Skips the first-run wizard
+
+[terminal]
+# Leave empty to automatically use your $SHELL (like zsh or bash)
+# Or force a specific one: default_shell = "zsh"
+
+[theme]
+# You can customize colors here. Herdr natively supports standard terminal 
+# colors, but you can define a preset like "nord" if you prefer.
+name = "default"
+
+# ==========================
+# ===    Key Bindings    ===
+# ==========================
+[keys]
+# 1. Core Prefix
+prefix = "ctrl+space"
+
+# 2. Your Custom Pane Splits
+# By default, Herdr uses prefix+v and prefix+minus. 
+# This changes them to match your 'u' and 'm' workflow.
+split_vertical = "prefix+u"     # Split left/right
+split_horizontal = "prefix+m"   # Split top/bottom
+
+# 3. Pane Navigation (Vim style)
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# 4. Tab and Workspace Management (Standard tmux-style)
+new_tab = "prefix+c"
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+new_workspace = "prefix+shift+n"
+close_pane = "prefix+x"
+
+# 5. Herdr-Specific UI
+# Toggle the sidebar that shows your AI agents' status (blocked, working, done)
+toggle_sidebar = "prefix+b"
+goto = "prefix+g"

@@ -1,0 +1,88 @@
+{
+  "version": 3,
+  "workspaces": [
+    {
+      "id": "w6",
+      "custom_name": null,
+      "identity_cwd": "/Users/rudranarayan/workspace/homes/resident-mobile-app",
+      "public_pane_numbers": {
+        "1": 1,
+        "4": 8,
+        "3": 7,
+        "2": 6
+      },
+      "next_public_pane_number": 9,
+      "public_tab_numbers": [
+        1,
+        6,
+        7,
+        8
+      ],
+      "next_public_tab_number": 9,
+      "tabs": [
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 1
+          },
+          "panes": {
+            "1": {
+              "cwd": "/Users/rudranarayan/workspace/homes/resident-mobile-app"
+            }
+          },
+          "zoomed": false,
+          "focused": 1,
+          "root_pane": 1
+        },
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 2
+          },
+          "panes": {
+            "2": {
+              "cwd": "/Users/rudranarayan/workspace/homes/manage-mobile-app"
+            }
+          },
+          "zoomed": false,
+          "focused": 2,
+          "root_pane": 2
+        },
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 3
+          },
+          "panes": {
+            "3": {
+              "cwd": "/Users/rudranarayan/workspace/homes/sec-mobile-app"
+            }
+          },
+          "zoomed": false,
+          "focused": 3,
+          "root_pane": 3
+        },
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 4
+          },
+          "panes": {
+            "4": {
+              "cwd": "/Users/rudranarayan/workspace/homes/resident-mobile-app"
+            }
+          },
+          "zoomed": false,
+          "focused": 4,
+          "root_pane": 4
+        }
+      ],
+      "active_tab": 0
+    }
+  ],
+  "active": 0,
+  "selected": 0,
+  "sidebar_width": 26,
+  "sidebar_section_split": 0.5,
+  "collapsed_space_keys": []
+}

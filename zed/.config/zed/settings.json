@@ -60,7 +60,7 @@
     "opencode": {
       "default_config_options": {
         "effort": "max",
-        "model": "opencode-go/glm-5.2"
+        "model": "opencode-go/kimi-k3"
       },
       "type": "registry"
     },
@@ -70,7 +70,7 @@
         "effort": "high",
         "reasoning": "high",
         "context": "1m",
-        "model": "default",
+        "model": "grok-4.5",
         "mode": "agent"
       },
       "favorite_config_option_values": {
@@ -105,7 +105,7 @@
       "provider": "zed.dev",
       "model": "claude-sonnet-4-6",
       "enable_thinking": true,
-      "effort": "max",
+      "effort": "high",
     },
     "sidebar_side": "right",
     "dock": "right",
@@ -114,7 +114,7 @@
         "provider": "zed.dev",
         "model": "claude-sonnet-4-6",
         "enable_thinking": true,
-        "effort": "max"
+        "effort": "high"
       },
       {
         "provider": "zed.dev",
