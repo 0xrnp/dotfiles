@@ -21,6 +21,7 @@ tool_state
 .android/
 
 # Cursor — auto-generated session data
+cursor/.config/cursor/chats/
 cursor/.config/cursor/acp-sessions/
 cursor/.config/cursor/User/workspaceStorage/
 cursor/.config/cursor/User/History/
