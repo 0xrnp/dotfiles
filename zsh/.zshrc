@@ -44,6 +44,31 @@ alias gwl="git worktree list"
 alias gwa="git worktree add"
 alias gwr="git worktree remove"
 
+# Terraform aliases
+alias tf="terraform"
+alias tfi="terraform init"
+alias tfp="terraform plan"
+alias tfa="terraform apply"
+alias tfd="terraform destroy"
+alias tfv="terraform validate"
+alias tff="terraform fmt -recursive"
+alias tfo="terraform output"
+alias tfs="terraform show"
+alias tfsl="terraform state list"
+alias tfsh="terraform state show"
+alias tfsm="terraform state mv"
+alias tfsr="terraform state rm"
+alias tfimp="terraform import"
+alias tfr="terraform refresh"
+alias tfw="terraform workspace"
+alias tfws="terraform workspace select"
+alias tfwl="terraform workspace list"
+alias tfwn="terraform workspace new"
+alias tfu="terraform force-unlock"
+alias tfc="terraform console"
+alias tfg="terraform graph"
+alias tfclean="rm -rf .terraform .terraform.lock.hcl"
+
 # Editor + FZF pickers
 alias vim=nvim
 alias vi=nvim
@@ -135,10 +160,9 @@ if [[ -n "$GHOSTTY_RESOURCES_DIR" || -n "$ALACRITTY_WINDOW_ID" ]]; then
   fastfetch
 fi
 
-# >>> otty shell integration >>>
-# Added by Otty — toggle in Settings > Shell > Shell Integration.
-# Inert unless launched by Otty (it sets $OTTY_SHELL_INTEGRATION).
-if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.zsh" ]; then
-  . "$OTTY_SHELL_INTEGRATION/otty-integration.zsh"
-fi
-# <<< otty shell integration <<<
+# Java
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# AWS Profile
+export AWS_PROFILE=homes-developer-737866084260

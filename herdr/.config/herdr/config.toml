@@ -59,3 +59,13 @@ height = "80%"
 [ui]
 # Ask for a name when creating a workspace (one workspace per repo workflow)
 prompt_new_workspace_name = true
+show_agent_labels_on_pane_borders = false
+
+[ui.sound]
+enabled = true
+
+[ui.toast]
+delivery = "off"
+
+[experimental]
+kitty_graphics = true

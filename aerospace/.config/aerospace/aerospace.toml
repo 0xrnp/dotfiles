@@ -15,9 +15,37 @@ config-version = 2
 # Keep all workspaces alive even when empty so AeroSpace never auto-creates
 # fallback workspaces (e.g. "10", "11") on unassigned monitors at startup.
 # See: https://nikitabobko.github.io/AeroSpace/guide#config-version-2
-persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
-                         "A", "B", "C", "D", "E", "I", "M", "N", "O", "P",
-                         "Q", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+persistent-workspaces = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "I",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+]
 
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
@@ -30,10 +58,10 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
 #
 after-startup-command = [
   'exec-and-forget borders active_color=0xff7dc4e4 inactive_color=0xffcba6f7 width=6.0 hidpi=on',
-  'workspace 1',   # main (laptop)
-  'workspace P',   # left DELL
-  'workspace 0',   # right DELL
-  'workspace 1',   # refocus back to main
+  'workspace 1',                                                                                  # main (laptop)
+  'workspace P',                                                                                  # left DELL
+  'workspace 0',                                                                                  # right DELL
+  'workspace 1',                                                                                  # refocus back to main
 ]
 
 # Start AeroSpace at login
@@ -283,7 +311,7 @@ run = ['layout floating']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'alacritty'
-run = 'move-node-to-workspace 1'
+run = 'move-node-to-workspace 0'
 
 [[on-window-detected]]
 if.app-id = 'com.mitchellh.ghostty'
@@ -299,7 +327,7 @@ run = 'move-node-to-workspace S'
 
 [[on-window-detected]]
 if.app-name-regex-substring = "warp"
-run = 'move-node-to-workspace W'
+run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
 if.app-name-regex-substring = "compass"
@@ -322,12 +350,8 @@ if.app-name-regex-substring = "xcode"
 run = 'move-node-to-workspace C'
 
 [[on-window-detected]]
-if.app-name-regex-substring = "apidog"
+if.app-name-regex-substring = "bruno"
 run = 'move-node-to-workspace A'
-
-[[on-window-detected]]
-if.app-name-regex-substring = "webstorm"
-run = 'move-node-to-workspace W'
 
 [[on-window-detected]]
 if.app-name-regex-substring = "zed"
@@ -338,9 +362,9 @@ if.app-id = "md.obsidian"
 run = 'move-node-to-workspace O'
 
 [[on-window-detected]]
-if.app-id = "company.thebrowser.dia"
-run = 'move-node-to-workspace D'
-
-[[on-window-detected]]
 if.app-id = "com.google.android.studio"
 run = 'move-node-to-workspace M'
+
+[[on-window-detected]]
+if.app-name-regex-substring = "idea"
+run = 'move-node-to-workspace P'
