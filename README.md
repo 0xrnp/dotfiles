@@ -7,6 +7,7 @@ My personal dotfiles for macOS, managed with [GNU Stow](https://www.gnu.org/soft
 | Tool | What it does |
 |---|---|
 | `aerospace` | Window manager |
+| `ai-agent` | Personal AI standards + Cursor/Claude gates |
 | `atuin` | Shell history search |
 | `bat` | Better `cat` |
 | `borders` | Window borders |
@@ -82,7 +83,7 @@ git clone git@github-personal:0xrnp/dotfiles.git ~/dotfiles
 ```bash
 cd ~/dotfiles
 
-for tool in aerospace atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```
@@ -91,9 +92,11 @@ done
 
 ```bash
 ls -la ~/.config | grep "\->"
+ls -la ~/ai-standards ~/.cursor/hooks.json ~/.claude/CLAUDE.md
+~/ai-standards/check.sh
 ```
 
-Every tool should show an arrow pointing to `~/dotfiles`.
+Every tool should show an arrow pointing to `~/dotfiles`. Agent standards should print `OK`.
 
 ---
 
@@ -139,10 +142,22 @@ git push
 cd ~/dotfiles
 git pull
 
-for tool in aerospace atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```
+
+### Agent standards (`ai-agent`)
+
+Personal plan-first rules and Cursor hard gates live in `ai-agent/` (not in work repos):
+
+| Live path | Role |
+|---|---|
+| `~/ai-standards/universal.md` | Doctrine |
+| `~/.cursor/hooks.json` + `~/.cursor/hooks/` | Enforcement |
+| `~/.claude/CLAUDE.md` | Claude Code pointer |
+
+Edit under `~/dotfiles/ai-agent/…`. Verify with `~/ai-standards/check.sh`.
 
 ---
 

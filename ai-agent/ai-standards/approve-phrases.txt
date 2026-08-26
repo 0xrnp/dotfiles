@@ -1,0 +1,17 @@
+# Exact ALL CAPS approval phrases (one per line).
+# gate-plan-approve.sh and check.sh read this file — edit here only.
+GO AHEAD
+PROCEED
+DO IT
+JUST DO IT
+IMPLEMENT
+IMPLEMENT IT
+APPROVED
+LGTM
+NO PLAN
+NO PLAN NEEDED
+SKIP THE PLAN
+MAKE THE CHANGE
+APPLY IT
+APPLY THE FIX
+APPLY THE CHANGE

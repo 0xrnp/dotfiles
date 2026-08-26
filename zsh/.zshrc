@@ -90,23 +90,20 @@ alias cd=z
 # 3. Atuin Init
 eval "$(atuin init zsh)"
 
-# 4. nvm
+# 4. mise — Node + Python only. Flutter stays on FVM; Rust on rustup.
+eval "$(/Users/rudranarayan/.local/bin/mise activate zsh)"
+
+# Old nvm lazy-load kept commented in case you need a one-off fallback:
 # export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-# 4. Lazy-Load NVM (Drastically speeds up terminal startup)
-export NVM_DIR="$HOME/.nvm"
-nvm() {
-    unset -f nvm node npm npx yarn
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm "$@"
-}
-node() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; node "$@"; }
-npm() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm "$@"; }
-npx() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npx "$@"; }
+# nvm() {
+#     unset -f nvm node npm npx yarn
+#     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+#     nvm "$@"
+# }
+# node() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; node "$@"; }
+# npm() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm "$@"; }
+# npx() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npx "$@"; }
 
 # 5. Zsh Autosuggestions (Using hardcoded Homebrew path)
 source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"

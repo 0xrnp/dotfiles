@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "./hooks/inject-standards.sh",
+        "timeout": 5
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "./hooks/gate-plan-approve.sh",
+        "timeout": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "./hooks/gate-edit.sh",
+        "timeout": 5,
+        "matcher": "Write|StrReplace|Delete|EditNotebook|Edit|ApplyPatch|DeleteFile|SearchReplace"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "./hooks/gate-shell.sh",
+        "timeout": 5
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "./hooks/gate-mcp.sh",
+        "timeout": 5
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "./hooks/gate-read.sh",
+        "timeout": 5
+      }
+    ]
+  }
+}
