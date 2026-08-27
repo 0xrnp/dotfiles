@@ -12,7 +12,7 @@ raw = sys.argv[1] if len(sys.argv) > 1 else ""
 try:
     d = json.loads(raw)
 except Exception:
-    print('{"permission":"allow"}')
+    print('{"permission":"deny","user_message":"Blocked: read gate could not parse the request."}')
     raise SystemExit(0)
 
 path = d.get("file_path") or d.get("path") or ""

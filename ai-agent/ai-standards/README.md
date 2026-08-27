@@ -1,52 +1,93 @@
 # Personal AI standards
 
-Tracked in `~/dotfiles/ai-agent` (GNU Stow). Edit there; live paths are symlinks into `$HOME`.
+This repository is the portable source for Rudra's coding-agent behavior. GNU
+Stow exposes tracked files under `$HOME`; product-specific installers merge only
+the hook entries that cannot safely be symlinked.
 
-Nothing here is meant for work repos. Do not copy into project `.cursor/` unless you explicitly want teammates to inherit it.
+Personal configuration stays out of work repositories unless a project rule is
+intended for the whole team.
 
-## Layout
+## Sources of truth
 
-| Path | Role |
-|------|------|
-| `~/ai-standards/universal.md` | Source of truth — how to think and work |
-| `~/ai-standards/identity.md` | Rudra / Homes persona, blast radius, skill routing |
-| `~/ai-standards/approve-phrases.txt` | Phrases that unlock edits (any case; first line is primary: `gooo`) |
-| `~/ai-standards/cursor-user-rules.md` | Optional paste into Cursor → Customize → Rules |
-| `~/.cursor/hooks/` + `hooks.json` | Hard gates (shell + MCP + plan-first) + session inject |
-| `~/.cursor/skills/` | Personal skills (using-skill-guide, homes-*, react-native, self-review, unslop, schema-design, blast-radius, mongo-aggregations) |
-| `~/.claude/CLAUDE.md` | Claude Code always-on pointer |
-| `~/.config/opencode/AGENTS.md` | OpenCode always-on pointer (stow package `opencode`) |
+| Path | Purpose |
+|---|---|
+| `~/ai-standards/AGENTS.md` | Concise universal engineering and workflow policy |
+| `~/ai-standards/approve-phrases.txt` | Standalone tokens that unlock the current turn |
+| `~/.agents/skills/` | Portable, on-demand Agent Skills |
+| `~/.cursor/hooks.json` | Cursor enforcement and context injection |
+| `~/.claude/CLAUDE.md` | Claude import and skill routing |
+| `~/.codex/AGENTS.md` | Codex pointer to the canonical policy |
+| `~/.config/opencode/AGENTS.md` | OpenCode pointer to the canonical policy |
 
-## Stow (this machine / fresh Mac)
+Repository instructions override personal skills for architecture, commands,
+versions, and local conventions.
+
+## Install on this or a new machine
+
+Clone the dotfiles repository at `~/dotfiles`, install GNU Stow and Python 3,
+then run:
 
 ```bash
-cd ~/dotfiles
-stow --target="$HOME" ai-agent
-~/ai-standards/check.sh
+~/dotfiles/ai-agent/ai-standards/bootstrap.sh
 ```
 
-Tracked `hooks.json` is the **portable core** only (your gates). Third-party hooks (Orca / Superset / herdr) are installed by those tools and are not in this package.
+The bootstrap:
 
-## What loads automatically
+1. Restows `ai-agent`, `codex`, and `opencode`.
+2. Adds personal `UserPromptSubmit` and `PreToolUse` hooks to Claude and Codex
+   without replacing Orca, Superset, Herdr, marketplace, or local settings.
+3. Runs the complete configuration check.
 
-1. **Cursor**: `sessionStart` injects `universal.md` + `identity.md` + approval phrases. Hooks gate dangerous shell, mutating MCP, secret reads, and **plan-first edits** (Write blocked until a phrase from `approve-phrases.txt`). Skills load from `~/.cursor/skills` when they apply (see `using-skill-guide`).
-2. **Claude Code**: reads `~/.claude/CLAUDE.md`.
-3. **OpenCode**: reads `AGENTS.md` next to `opencode.json` when present.
+Run `~/ai-standards/check.sh` at any time to detect broken links, stale
+references, invalid JSON, missing skills, or approval-gate regressions.
 
-Verify anytime: `~/ai-standards/check.sh`
+## How updates are tracked
 
-### Attribution (Co-authored-by Cursor)
+Edit files through their live symlinks or under `~/dotfiles`. Both paths modify
+the same tracked file, so `git diff` shows changes immediately. Git commits
+remain explicit. The setup never commits configuration automatically.
 
-- CLI: `~/.cursor/cli-config.json` → `attribution.attributeCommitsToAgent/PRs: false`
-- Shell hook: **denies** commits/PRs whose command includes Cursor co-author / `@cursor.com` trailers
-- Also turn off in UI: **Cursor Settings → Git & PRs → Attribution** (IDE injects trailers outside the shell sometimes)
+Claude and Codex settings are exceptions because integrations also modify those
+JSON files. `install-agent-hooks.py` merges tracked hook commands
+idempotently. The full live settings files are not copied into this package.
 
-Opt-in (noisy): add `./hooks/dod-stop.sh` to `stop` in `~/.cursor/hooks.json` for a one-shot DoD follow-up after each completed agent turn.
+## Skills and context
 
-## Edit once
+Agents initially see skill names and short descriptions. They load a
+`SKILL.md` body only when the task matches. `using-skill-guide` routes by task,
+language, and repository without loading every skill.
 
-Change `~/dotfiles/ai-agent/ai-standards/universal.md`, `identity.md`, or `approve-phrases.txt` (live via symlink). Skills live in `~/dotfiles/ai-agent/.cursor/skills/`. Agents pick standards up on the next session; phrase list is live for the next prompt.
+Primary language skills cover JavaScript/TypeScript, Dart/Flutter, Python,
+Terraform/HCL, and Rust. Cross-cutting skills cover contracts, stored shape,
+system design, impact analysis, MongoDB aggregation, prose, and final review.
+Homes-specific skills apply only in Homes repositories.
 
-## Optional: Cursor User Rules UI
+Add a skill only for a repeated workflow or non-obvious domain constraint.
+Keep the main file small, include when not to use it, and move detailed
+reference material into one-hop `references/` files only when needed.
 
-If you want account-synced rules as a backup, paste `cursor-user-rules.md` into **Cursor → Customize → Rules**. Not required if hooks are working.
+## Enforcement limits
+
+Hooks prevent supported mutating tools from running before a standalone
+approval token. They re-lock on each user prompt. Read-only shell commands
+remain available for inspection.
+
+Hooks cannot prove that a design is correct or reliably extract a file allowlist
+from an assistant's prose plan. Repository tests, type systems, linters, CI,
+diff review, and human judgment remain required.
+
+Cursor user hooks do not reach Cursor Cloud Agents, remote workers, or Tab.
+Those environments need project or managed policy if the same hard controls are
+required.
+
+## Secrets
+
+Do not track credentials, tokens, `.env` files, MCP authentication, agent
+sessions, caches, generated marketplace content, or machine authentication
+state. Keep examples credential-free.
+
+## Attribution
+
+Cursor commit and PR attribution is disabled in CLI configuration and guarded
+by the shell hook. Also disable it in Cursor Settings under Git and PRs because
+the IDE can add attribution outside the shell.

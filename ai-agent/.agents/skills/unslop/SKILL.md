@@ -18,11 +18,13 @@ Rewrite so it sounds like a person. Keep meaning. Drop the costume.
 
 - Chatbot: "I hope this helps", "Great question!", "Certainly!", "Let me know if…"
 - Puffery: pivotal, testament, landscape, delve, leverage, utilize, seamless, robust, groundbreaking
-- "Not just X, but Y." "In order to" → "To". "It is important to note" → delete
-- Bold on every noun. Emoji in headings. Title Case Headings → sentence case
-- Em dash habit. Prefer period or comma
+- "Not just X, but Y." Replace "in order to" with "to". Delete "it is important to note"
+- Bold on every noun. Emoji in headings. Use sentence case for headings
+- Em dashes. Prefer a sentence, comma, colon, or parentheses
 - Synonym cycling (three names for the same thing). Pick one word
 - Generic closer: "The future looks bright." End on the fact or the next step
+- Comments that narrate syntax. Keep only decisions, invariants, constraints,
+  and non-obvious trade-offs
 
 ## Keep
 

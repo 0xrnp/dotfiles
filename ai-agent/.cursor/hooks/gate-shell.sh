@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-# Block / ask on dangerous shell. Fail open on parse errors.
+# Require plan approval for mutating shell and block dangerous commands.
 set -u
 
 input=$(cat || true)
+policy=$(printf '%s' "$input" | python3 "$HOME/ai-standards/approval-gate.py" cursor shell)
+if [[ "$policy" == *'"permission": "deny"'* ]]; then
+    printf '%s\n' "$policy"
+    exit 0
+fi
 
 python3 - "$input" <<'PY'
 import json, re, sys
@@ -29,7 +34,7 @@ def ask(msg="Review this shell command before allowing it."):
     print(json.dumps({
         "permission": "ask",
         "user_message": msg,
-        "agent_message": "Flagged by personal shell gate — get explicit user approval.",
+        "agent_message": "Flagged by personal shell gate. Get explicit user approval.",
     }))
     raise SystemExit(0)
 
@@ -89,27 +94,27 @@ if re.search(r"(curl|wget|fetch)\b[^;&|\n]*\|\s*python(?:3)?\b", c):
 
 # --- Ask: git writes (user must explicitly want commits/pushes) ---
 if re.search(r"\bgit\s+commit\b", c):
-    ask("Git commit — confirm (and ensure no Cursor Co-authored-by trailer).")
+    ask("Git commit. Confirm and ensure there is no Cursor Co-authored-by trailer.")
 if re.search(r"\bgit\s+push\b", c):
-    ask("Git push — confirm before allowing.")
+    ask("Git push. Confirm before allowing.")
 
 # --- Ask: infra / publish nukes ---
 if re.search(r"\bterraform\s+(apply|destroy)\b", c):
-    ask("Terraform apply/destroy — confirm before allowing.")
+    ask("Terraform apply or destroy. Confirm before allowing.")
 if re.search(r"\bkubectl\s+delete\b", c):
-    ask("kubectl delete — confirm before allowing.")
+    ask("kubectl delete. Confirm before allowing.")
 if re.search(r"\b(npm|pnpm|yarn)\s+publish\b", c):
-    ask("Package publish — confirm before allowing.")
+    ask("Package publish. Confirm before allowing.")
 if re.search(r"\bdocker\s+system\s+prune\b", c):
-    ask("docker system prune — confirm before allowing.")
+    ask("docker system prune. Confirm before allowing.")
 
 # --- Ask: local mass delete / secrets peek / chmod 777 ---
 if re.search(r"\brm\s+(-[a-zA-Z]*f[a-zA-Z]*|--force)", c) and re.search(r"\brm\s+(-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)", c):
-    ask("Recursive force-delete — confirm before allowing.")
+    ask("Recursive force-delete. Confirm before allowing.")
 if re.search(r"(^|[;&|]\s*)cat\s+[^\n;|&]*\.env(\s|$)", c):
-    ask("Reading .env — confirm before allowing.")
+    ask("Reading .env. Confirm before allowing.")
 if re.search(r"chmod\s+-R\s+777\b", c):
-    ask("chmod -R 777 — confirm before allowing.")
+    ask("chmod -R 777. Confirm before allowing.")
 
 print('{"permission":"allow"}')
 PY

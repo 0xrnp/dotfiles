@@ -31,6 +31,6 @@ if [[ "$status" != "completed" ]] || [[ "$loop_count" != "0" ]]; then
   exit 0
 fi
 
-# Soft nudge — agent may ignore if already covered; loop_limit prevents spam
-printf '%s\n' '{"followup_message":"Quick DoD check (personal standard): if this was non-trivial work, confirm in one short reply — (1) changed files, (2) why minimal, (3) verification run or why not, (4) residual risks. If already covered or the task was trivial, reply with just OK."}'
+# Soft nudge. The agent may ignore it if already covered; loop_limit prevents spam.
+printf '%s\n' '{"followup_message":"Quick DoD check: for non-trivial work, confirm changed files, why the diff is minimal, verification run or why not, and residual risks. If already covered or the task was trivial, reply with just OK."}'
 exit 0

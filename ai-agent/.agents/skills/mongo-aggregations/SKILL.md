@@ -3,21 +3,27 @@ name: mongo-aggregations
 description: >-
   Write and change Mongoose aggregation pipelines the way this API already does.
   Use when adding or editing .aggregate(), $lookup, $match, $group, or
-  list/dashboard queries. Do not use MongoDB MCP against Homes data unless Rudra
-  pastes a readonly URL this session.
+  list/dashboard queries. Use MongoDB connections only when Rudra explicitly
+  authorizes the named MCP or supplied URL for the current task.
 ---
 
 # Mongo aggregations
 
 Write pipelines like this API. Copy a **neighbor in the same feature**. Do not invent a new `$lookup` graph.
 
-## Do not touch the live DB
+## MongoDB access
 
-Do **not** call MongoDB MCP `connect`, `explain`, `find`, `aggregate`, or anything else against Homes data.
+Do **not** access Homes data unless Rudra explicitly says `use <MCP name>` or `use <MongoDB URL>`.
 
-No connection string in chat, settings, or memory counts as permission. The only exception: Rudra pastes a **readonly** URL **in this session** and says to use it. Until then, reason from `src/models` and existing services.
+Authorization applies only to the named connection and current task. A configured connection, URL in settings, or URL from an earlier task is not permission.
 
-Plugin docs (`search-knowledge`) are fine. Live cluster is not.
+Read operations such as `find`, `aggregate`, `count`, `explain`, schema, and index inspection are allowed after authorization. Never perform writes, create or alter indexes, or call a mutating tool.
+
+Never save, commit, log, repeat, or expose a supplied URL or its credentials. Pass it only to the authorized connection operation.
+
+All Homes queries must be scoped by `project` unless the query's sole purpose is to identify duplicate groups across projects; in that case, group by `project` and return only project IDs, record IDs, and non-sensitive fields needed for remediation.
+
+Plugin docs (`search-knowledge`) are always safe to read.
 
 ## Write the pipeline
 
@@ -31,7 +37,7 @@ Plugin docs (`search-knowledge`) are fine. Live cluster is not.
 
 ## Slow?
 
-Say it might be slow. Name the compound index you would want, from the `$match` + `$sort` keys. Do **not** run `explain`. If Rudra later gives a readonly URL, then MCP `explain` is allowed for that session only.
+Say it might be slow. Name the compound index you would want, from the `$match` + `$sort` keys. Run `explain` only after explicit MongoDB access authorization.
 
 ## Output before code
 

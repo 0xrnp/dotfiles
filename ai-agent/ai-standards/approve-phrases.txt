@@ -1,26 +1,8 @@
-# Case-insensitive. Word-boundary match. This turn only.
-# First phrase is primary (shown when asking for approval).
+# Case-insensitive. The trimmed user message must equal one token.
+# Valid for the current turn only. First token is primary.
 gooo
 
-# Also daily
 okgo
 
-# Tiny / already specified: skip the write-up. Still this turn only.
+# Skip the plan write-up only when the requested scope is already exact.
 noplan
-
-# Legacy (any case — these also fire in normal chat)
-go ahead
-proceed
-do it
-just do it
-implement
-implement it
-approved
-lgtm
-no plan
-no plan needed
-skip the plan
-make the change
-apply it
-apply the fix
-apply the change

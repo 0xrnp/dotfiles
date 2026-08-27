@@ -69,7 +69,7 @@ Do not hand-edit `*.g.dart`, `*.freezed.dart`, `*.gen.dart`. After model/Freezed
 ## Do not
 
 - New dependencies. New state-management library. Bump `homes_shared` git ref unless asked.
-- Touch SOS, CallKit, visitor gate, Razorpay, or Shorebird without naming it first (`identity.md` blast radius).
+- Touch SOS, CallKit, visitor gate, Razorpay, or Shorebird without naming it first (`AGENTS.md` and `blast-radius`).
 - Claim a device/emulator run you did not do.
 
 ## Verify

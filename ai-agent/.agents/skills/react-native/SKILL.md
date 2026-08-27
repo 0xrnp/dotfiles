@@ -1,6 +1,6 @@
 ---
 name: react-native
-description: React Native and Expo working rules. Use when the repo is (or will be) RN/Expo — app.json, expo, react-native, metro, eas, React Navigation, native modules. Do not invent APIs; read this project's versions and current official docs.
+description: React Native and Expo working rules. Use for app.json, Expo, React Native, Metro, EAS, React Navigation, or native modules. Read project versions and current official docs.
 paths: "**/*.{tsx,jsx},**/app.json,**/app.config.*,**/metro.config.*,**/eas.json,**/react-native.config.js"
 ---
 
@@ -16,7 +16,7 @@ There is no Homes RN app yet. Do not copy Flutter (`homes-flutter`) or Angular i
 |---|---|
 | `expo` in `package.json` / `app.json` / `app.config.*` | Expo (managed or prebuild) |
 | `react-native` without `expo` | RN CLI / bare |
-| Neither, and Rudra asked to start an app | Greenfield — ask Expo vs bare if unclear. Then use **today's** official template (`create-expo-app` or current RN docs). Do not pick an SDK number from this file. |
+| Neither, and Rudra asked to start an app | Greenfield. Ask Expo vs bare if unclear. Then use today's official template (`create-expo-app` or current RN docs). Do not pick an SDK number from this file. |
 | Neither, and this is a question | Answer. Do not scaffold. |
 
 If `package.json` and this skill disagree, `package.json` wins.

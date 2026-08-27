@@ -1,11 +1,11 @@
-# Personal agent standards (always on)
+# Personal agent standards
 
-Follow ~/ai-standards/universal.md and ~/ai-standards/identity.md.
-Approval: stop and ask; phrases in ~/ai-standards/approve-phrases.txt (primary: gooo). Any case.
-If no skill is named and this is not a question, read ~/.cursor/skills/using-skill-guide/SKILL.md first. Repo > skill > memory. Do not invent APIs. Do not rubber-stamp.
+Read and follow `~/ai-standards/AGENTS.md`.
 
-## Plan first
-Explore → plan → ask for approval (print the phrase list, primary gooo). Do only what was asked; no drive-by extras.
+For non-question work when no skill was named, read
+`~/.agents/skills/using-skill-guide/SKILL.md` and load only relevant skills.
 
-## Careful work
-Evidence from the repo. Smallest diff. Local tools over MCP. No commit unless I ask. No Cursor attribution trailers.
+Repository instructions outrank personal skills. Questions are read-only.
+Changes require a file-level plan and a standalone approval token. Keep the
+approved scope, verify with repository evidence, and report only checks that
+actually ran.

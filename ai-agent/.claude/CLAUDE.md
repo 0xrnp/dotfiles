@@ -1,11 +1,10 @@
-# Personal AI standards (always on for Claude Code)
+@~/ai-standards/AGENTS.md
 
-Read and follow: ~/ai-standards/universal.md and ~/ai-standards/identity.md
-Approval: stop and ask; phrases in ~/ai-standards/approve-phrases.txt (primary: gooo). Any case.
-If no skill is named and this is not a question, read ~/.cursor/skills/using-skill-guide/SKILL.md first. Repo > skill > memory. Do not invent APIs. Do not rubber-stamp.
+# Claude Code
 
-## Plan first
-Explore → plan (files + concrete changes + what you will not touch) → stop → ask for approval and print the phrase list (primary gooo). Scope lock: no work outside the approved plan.
+Portable personal skills live in `~/.agents/skills/`. For non-question work
+when no skill was named, read
+`~/.agents/skills/using-skill-guide/SKILL.md` before acting.
 
-## Careful work
-Local tools over MCP. Smallest diff. No drive-by. No commit unless asked. No Cursor attribution trailers. Report DoD for non-trivial work.
+User-level hooks enforce approval before mutating tools. Hook authorization does
+not replace the file-level plan required by the imported standards.

@@ -16,6 +16,7 @@
     "preToolUse": [
       {
         "command": "./hooks/gate-edit.sh",
+        "failClosed": true,
         "timeout": 5,
         "matcher": "Write|StrReplace|Delete|EditNotebook|Edit|ApplyPatch|DeleteFile|SearchReplace"
       }
@@ -23,18 +24,27 @@
     "beforeShellExecution": [
       {
         "command": "./hooks/gate-shell.sh",
+        "failClosed": true,
         "timeout": 5
       }
     ],
     "beforeMCPExecution": [
       {
         "command": "./hooks/gate-mcp.sh",
+        "failClosed": true,
         "timeout": 5
       }
     ],
     "beforeReadFile": [
       {
         "command": "./hooks/gate-read.sh",
+        "failClosed": true,
+        "timeout": 5
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 \"$HOME/ai-standards/approval-gate.py\" cursor lock",
         "timeout": 5
       }
     ]
