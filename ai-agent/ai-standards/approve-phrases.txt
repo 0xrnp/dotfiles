@@ -1,17 +1,26 @@
-# Exact ALL CAPS approval phrases (one per line).
-# gate-plan-approve.sh and check.sh read this file — edit here only.
-GO AHEAD
-PROCEED
-DO IT
-JUST DO IT
-IMPLEMENT
-IMPLEMENT IT
-APPROVED
-LGTM
-NO PLAN
-NO PLAN NEEDED
-SKIP THE PLAN
-MAKE THE CHANGE
-APPLY IT
-APPLY THE FIX
-APPLY THE CHANGE
+# Case-insensitive. Word-boundary match. This turn only.
+# First phrase is primary (shown when asking for approval).
+gooo
+
+# Also daily
+okgo
+
+# Tiny / already specified: skip the write-up. Still this turn only.
+noplan
+
+# Legacy (any case — these also fire in normal chat)
+go ahead
+proceed
+do it
+just do it
+implement
+implement it
+approved
+lgtm
+no plan
+no plan needed
+skip the plan
+make the change
+apply it
+apply the fix
+apply the change

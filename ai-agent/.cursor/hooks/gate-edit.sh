@@ -36,15 +36,27 @@ if allowed:
     print('{"permission":"allow"}')
     raise SystemExit(0)
 
+phrases_path = Path(os.path.expanduser("~/ai-standards/approve-phrases.txt"))
+phrases = []
+if phrases_path.is_file():
+    for line in phrases_path.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            phrases.append(line)
+primary = phrases[0] if phrases else "gooo"
+listed = ", ".join(phrases) if phrases else "gooo"
+
 print(json.dumps({
     "permission": "deny",
-    "user_message": "Plan-first: show a change plan, then say an ALL CAPS phrase from ~/ai-standards/approve-phrases.txt (e.g. GO AHEAD).",
+    "user_message": (
+        f"Plan-first: show a change plan, then say an approval phrase "
+        f"(primary: {primary}). Phrases: {listed}."
+    ),
     "agent_message": (
         "EDIT BLOCKED by personal plan-first gate. Do NOT retry the edit yet. "
         "Reply with: (1) goal, (2) files to touch, (3) concrete changes per file, "
         "(4) what you will not change, (5) risks. Scope lock — nothing outside that plan. "
-        "Then STOP and wait for an ALL CAPS phrase from ~/ai-standards/approve-phrases.txt "
-        "(e.g. GO AHEAD / DO IT / JUST DO IT)."
+        f"Then STOP and ask for approval. Primary: {primary}. Phrases: {listed}."
     ),
 }))
 PY

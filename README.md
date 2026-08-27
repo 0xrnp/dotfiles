@@ -19,6 +19,7 @@ My personal dotfiles for macOS, managed with [GNU Stow](https://www.gnu.org/soft
 | `htop` | Process viewer |
 | `jgit` | Git helper |
 | `lazygit` | Git TUI |
+| `luvus` | AI agent terminal multiplexer |
 | `nvim` | Neovim editor |
 | `opencode` | AI coding tool |
 | `raycast` | Spotlight replacement |
@@ -46,6 +47,7 @@ brew install stow git zsh
 
 ```bash
 brew install neovim lazygit yazi eza bat btop htop atuin zellij
+brew install RizRiyz/luvus/luvus
 brew install --cask ghostty zed cursor aerospace raycast
 ```
 
@@ -83,7 +85,7 @@ git clone git@github-personal:0xrnp/dotfiles.git ~/dotfiles
 ```bash
 cd ~/dotfiles
 
-for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit luvus nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```
@@ -142,7 +144,7 @@ git push
 cd ~/dotfiles
 git pull
 
-for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter ghostty htop jgit lazygit luvus nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```

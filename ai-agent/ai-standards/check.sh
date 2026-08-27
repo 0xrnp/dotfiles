@@ -2,15 +2,33 @@
 set -euo pipefail
 H="$HOME"
 test -r "$H/ai-standards/universal.md"
+test -r "$H/ai-standards/identity.md"
 test -r "$H/ai-standards/approve-phrases.txt"
 test -x "$H/.cursor/hooks/gate-edit.sh"
 test -x "$H/.cursor/hooks/gate-plan-approve.sh"
+test -r "$H/.cursor/skills/using-skill-guide/SKILL.md"
+test -r "$H/.cursor/skills/homes-flutter/SKILL.md"
+test -r "$H/.cursor/skills/homes-js-ts/SKILL.md"
+test -r "$H/.cursor/skills/homes-git/SKILL.md"
+test -r "$H/.cursor/skills/unslop/SKILL.md"
+test -r "$H/.cursor/skills/self-review/SKILL.md"
+test -r "$H/.cursor/skills/react-native/SKILL.md"
+test -r "$H/.cursor/skills/schema-design/SKILL.md"
+test -r "$H/.cursor/skills/blast-radius/SKILL.md"
+test -r "$H/.cursor/skills/mongo-aggregations/SKILL.md"
 grep -q 'Plan → approve → edit' "$H/ai-standards/universal.md"
 grep -q 'Scope lock' "$H/ai-standards/universal.md"
+grep -q 'using-skill-guide' "$H/ai-standards/identity.md"
+grep -q 'Questions are read-only' "$H/ai-standards/identity.md"
+grep -q 'Repo > skill > memory' "$H/ai-standards/identity.md"
+grep -q 'self-review' "$H/ai-standards/identity.md"
+grep -q 'rubber-stamp' "$H/ai-standards/identity.md"
+grep -q 'push back' "$H/ai-standards/universal.md"
 grep -q './hooks/gate-edit.sh' "$H/.cursor/hooks.json"
 grep -q './hooks/gate-plan-approve.sh' "$H/.cursor/hooks.json"
 echo '{}' | "$H/.cursor/hooks/inject-standards.sh" | grep -q 'Plan'
-echo '{}' | "$H/.cursor/hooks/inject-standards.sh" | grep -q 'GO AHEAD'
+echo '{}' | "$H/.cursor/hooks/inject-standards.sh" | grep -q 'gooo'
+echo '{}' | "$H/.cursor/hooks/inject-standards.sh" | grep -q 'using-skill-guide'
 echo '{"tool_name":"Write","conversation_id":"chk","generation_id":"g1"}' | "$H/.cursor/hooks/gate-edit.sh" | grep -q '"deny"'
 
 python3 - "$H" <<'PY'
@@ -24,6 +42,7 @@ phrases = [
     if ln.strip() and not ln.strip().startswith("#")
 ]
 assert phrases, "approve-phrases.txt is empty"
+assert phrases[0] == "gooo", f"primary should be gooo, got {phrases[0]!r}"
 
 def gate_edit(cid, gid="g"):
     out = subprocess.check_output(
@@ -40,11 +59,15 @@ def approve(prompt, cid, gid="g"):
         text=True,
     )
 
-# lowercase of first phrase must NOT unlock
-lo = phrases[0].lower()
-approve(lo, "chk-lo", "g0")
-assert gate_edit("chk-lo", "g0") == "deny", f"lowercase unlocked: {lo!r}"
-Path(f"{h}/.cursor/ai-standards-state/edit-ok-chk-lo").unlink(missing_ok=True)
+# any-case: mixed primary must unlock
+approve(phrases[0].swapcase(), "chk-mix", "g0")
+assert gate_edit("chk-mix", "g0") == "allow", f"mixed case did not unlock: {phrases[0]!r}"
+Path(f"{h}/.cursor/ai-standards-state/edit-ok-chk-mix").unlink(missing_ok=True)
+
+# substring must not unlock (goo vs google)
+approve("please google thanks", "chk-google", "g0")
+assert gate_edit("chk-google", "g0") == "deny", "google unlocked via goo"
+Path(f"{h}/.cursor/ai-standards-state/edit-ok-chk-google").unlink(missing_ok=True)
 
 for i, phrase in enumerate(phrases):
     cid = f"chk-{i}"

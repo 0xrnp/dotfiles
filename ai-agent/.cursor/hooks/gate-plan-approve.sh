@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Approve edits for this turn when the user explicitly green-lights.
-# Phrases: ~/ai-standards/approve-phrases.txt (ALL CAPS, exact).
+# Phrases: ~/ai-standards/approve-phrases.txt (case-insensitive).
 # Fail open.
 set -u
 
@@ -32,7 +32,7 @@ if phrases_path.is_file():
 approve = False
 if phrases:
     parts = [r"\s+".join(re.escape(w) for w in p.split()) for p in phrases]
-    approve = bool(re.search(r"\b(?:" + "|".join(parts) + r")\b", prompt))
+    approve = bool(re.search(r"\b(?:" + "|".join(parts) + r")\b", prompt, re.IGNORECASE))
 
 state_dir = Path(os.path.expanduser("~/.cursor/ai-standards-state"))
 state_dir.mkdir(parents=True, exist_ok=True)

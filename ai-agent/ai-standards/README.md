@@ -9,9 +9,11 @@ Nothing here is meant for work repos. Do not copy into project `.cursor/` unless
 | Path | Role |
 |------|------|
 | `~/ai-standards/universal.md` | Source of truth — how to think and work |
-| `~/ai-standards/approve-phrases.txt` | ALL CAPS phrases that unlock edits |
+| `~/ai-standards/identity.md` | Rudra / Homes persona, blast radius, skill routing |
+| `~/ai-standards/approve-phrases.txt` | Phrases that unlock edits (any case; first line is primary: `gooo`) |
 | `~/ai-standards/cursor-user-rules.md` | Optional paste into Cursor → Customize → Rules |
 | `~/.cursor/hooks/` + `hooks.json` | Hard gates (shell + MCP + plan-first) + session inject |
+| `~/.cursor/skills/` | Personal skills (using-skill-guide, homes-*, react-native, self-review, unslop, schema-design, blast-radius, mongo-aggregations) |
 | `~/.claude/CLAUDE.md` | Claude Code always-on pointer |
 | `~/.config/opencode/AGENTS.md` | OpenCode always-on pointer (stow package `opencode`) |
 
@@ -27,7 +29,7 @@ Tracked `hooks.json` is the **portable core** only (your gates). Third-party hoo
 
 ## What loads automatically
 
-1. **Cursor**: `sessionStart` injects `universal.md` + approval phrases. Hooks gate dangerous shell, mutating MCP, secret reads, and **plan-first edits** (Write blocked until an ALL CAPS phrase from `approve-phrases.txt`).
+1. **Cursor**: `sessionStart` injects `universal.md` + `identity.md` + approval phrases. Hooks gate dangerous shell, mutating MCP, secret reads, and **plan-first edits** (Write blocked until a phrase from `approve-phrases.txt`). Skills load from `~/.cursor/skills` when they apply (see `using-skill-guide`).
 2. **Claude Code**: reads `~/.claude/CLAUDE.md`.
 3. **OpenCode**: reads `AGENTS.md` next to `opencode.json` when present.
 
@@ -43,7 +45,7 @@ Opt-in (noisy): add `./hooks/dod-stop.sh` to `stop` in `~/.cursor/hooks.json` fo
 
 ## Edit once
 
-Change `~/dotfiles/ai-agent/ai-standards/universal.md` or `approve-phrases.txt` (live via symlink). Agents pick standards up on the next session; phrase list is live for the next prompt.
+Change `~/dotfiles/ai-agent/ai-standards/universal.md`, `identity.md`, or `approve-phrases.txt` (live via symlink). Skills live in `~/dotfiles/ai-agent/.cursor/skills/`. Agents pick standards up on the next session; phrase list is live for the next prompt.
 
 ## Optional: Cursor User Rules UI
 

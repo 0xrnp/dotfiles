@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "theme": "catppuccin-mocha",
+  "language": "en",
+  "shell": "default",
+  "sidebar_width": 26,
+  "sidebars": {
+    "left": {
+      "visible": true,
+      "width": 26,
+      "docks": [
+        "workspaces",
+        "agents"
+      ]
+    },
+    "right": {
+      "visible": false,
+      "width": 26,
+      "docks": []
+    }
+  },
+  "layout": {
+    "col_gap": 1,
+    "row_gap": 0,
+    "show_titles": true,
+    "pane_title_path": false,
+    "agent_title": true,
+    "resume_in_new_workspace": true,
+    "new_pane_to_workspace_root": false,
+    "file_open": "readonly",
+    "scrollback_bytes": 10485760,
+    "files_show_hidden": true,
+    "diff_layout": "auto",
+    "diff_wrap": false,
+    "diff_context_lines": 3,
+    "diff_show_line_numbers": true,
+    "diff_marker_style": "symbols",
+    "diff_color_mode": "theme",
+    "diff_live_refresh": true,
+    "mobile_width": 64,
+    "shift_enter": "esc-cr"
+  },
+  "notifications": {
+    "sound_on_done": true,
+    "sound_on_blocked": true
+  },
+  "check_updates": true,
+  "resume_launch_flags": false,
+  "keybindings": {},
+  "prefix": "ctrl+space",
+  "mission_pricing": {},
+  "mission_budget": null,
+  "docks_off": [],
+  "bars": {
+    "top_right": [],
+    "bottom_right": [
+      "core:runtime-status"
+    ],
+    "off": []
+  }
+}

@@ -1,0 +1,5 @@
+# Detect Cursor Agent CLI when invoked as `agent` (not only `cursor-agent`).
+agent = "cursor"
+
+[identity]
+distinct = ["agent", "cursor-agent"]

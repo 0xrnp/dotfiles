@@ -73,3 +73,15 @@ herdr/.config/herdr/*.sock
 
 # Herdr-generated opencode plugin (written into the stowed dir)
 opencode/.config/opencode/plugins/herdr-agent-state.js
+
+# Luvus — runtime state (preferences + manifests are stowed)
+luvus/.luvus/session.json
+luvus/.luvus/orch.json
+luvus/.luvus/modules.json
+luvus/.luvus/modules/
+luvus/.luvus/worktrees/
+luvus/.luvus/reviews/
+luvus/.luvus/skills/
+luvus/.luvus/themes/
+luvus/.luvus/*.sock
+luvus/.luvus/server.lock

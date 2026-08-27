@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "fullscreen_mode": "native",
   "format_on_save": "on",
   "lsp": {
     "vtsls": {
@@ -55,6 +56,11 @@
   },
   "agent_servers": {
     "cursor": {
+      "default_config_options": {
+        "reasoning": "medium",
+        "effort": "xhigh",
+        "model": "default"
+      },
       "type": "registry"
     },
     "claude-acp": {

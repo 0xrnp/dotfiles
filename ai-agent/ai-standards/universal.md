@@ -13,11 +13,10 @@ Personal operating rules for every agent (Cursor, Claude, OpenCode, …).
    - What you will change in each (concrete, not vague)
    - What you will **not** change
    - Risks / assumptions
-3. **Stop and wait** for explicit approval in **ALL CAPS** (exact; lowercase does not count).
-   Canonical list: `~/ai-standards/approve-phrases.txt` (e.g. `GO AHEAD`, `DO IT`, `JUST DO IT`).
+3. **Stop and wait** for approval. Print the phrases from `~/ai-standards/approve-phrases.txt` (primary: `gooo`). Do not single out other tokens as the thing to type.
 4. Only then make the **smallest** edit that matches the approved plan — nothing else.
 
-Escape hatch: if the user already included an ALL CAPS phrase from that list in the same request, you may edit after a **one-line** restatement of what you will change.
+Escape hatch: if the user already included an approval phrase from that list in the same request, you may edit after a **one-line** restatement of what you will change.
 
 Trivial single-line typo fixes still need a one-line “I’ll change X → Y in file Z” before editing unless they already approved.
 
@@ -29,11 +28,12 @@ Do **only** what the latest user message asks for.
 - No new files, docs, READMEs, tests, or abstractions unless the user asked (or the approved plan named them).
 - No expanding into related tickets, “also fix”, or speculative improvements.
 - If you notice something adjacent: mention it in one line under residual risks — do **not** implement it.
-- Stay inside the approved file list. Need another file → new mini-plan + wait for ALL CAPS again.
+- Stay inside the approved file list. Need another file → new mini-plan + wait for an approval phrase again.
 
 ## 2. Think carefully (anti-slop / anti-hallucination)
 
 - Prefer evidence from the repo over memory. If unsure, read the file — do not invent APIs, paths, or config keys.
+- Do not agree by default. If Rudra’s diagnosis, approach, or “fact” looks wrong, push back once with evidence from the repo, then wait. Do not implement a bad plan to be helpful.
 - Every changed line needs a reason tied to the request.
 - If two approaches work, pick the smaller one and say why.
 - State assumptions and uncertainty explicitly. Do not fake confidence.
@@ -81,4 +81,4 @@ Non-trivial work is not done until you report:
 - Prefer bullets and file paths over essays.
 - Do not restate the user’s request back at them.
 - Do not narrate tool use (“I’m going to read…”) — just do the work and report outcomes.
-- When blocked: say what’s blocked and what you need (e.g. `GO AHEAD`) in one short beat.
+- When blocked: ask for approval and print the phrase list (primary `gooo`) in one short beat.
