@@ -12,6 +12,10 @@ command -v python3 >/dev/null 2>&1 || {
   printf '%s\n' "Python 3 is required."
   exit 1
 }
+command -v jq >/dev/null 2>&1 || {
+  printf '%s\n' "jq is required."
+  exit 1
+}
 
 legacy_cursor_skills=(
   blast-radius homes-flutter homes-git homes-js-ts mongo-aggregations

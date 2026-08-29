@@ -140,6 +140,12 @@ def state_path(product: str, data: dict[str, Any]) -> Path | None:
     return STATE_DIR / f"{digest}.json"
 
 
+def prompt_approves(prompt: str) -> bool:
+    """True when the last non-empty line is an approval phrase."""
+    lines = [line.strip() for line in prompt.splitlines() if line.strip()]
+    return bool(lines) and lines[-1].casefold() in phrases()
+
+
 def relock_or_approve(product: str, data: dict[str, Any]) -> bool:
     state = state_path(product, data)
     if state is None:
@@ -147,7 +153,7 @@ def relock_or_approve(product: str, data: dict[str, Any]) -> bool:
 
     state.unlink(missing_ok=True)
     prompt = data.get("prompt")
-    if not isinstance(prompt, str) or prompt.strip().casefold() not in phrases():
+    if not isinstance(prompt, str) or not prompt_approves(prompt):
         return False
 
     STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -268,7 +274,8 @@ def cursor_result(allowed: bool, message: str) -> None:
                 "user_message": message,
                 "agent_message": (
                     "Blocked by the personal plan-first gate. Present a "
-                    "file-level plan and wait for a standalone approval token."
+                    "file-level plan and wait for an approval token "
+                    "(last non-empty line of the user message)."
                 ),
             }
         )
@@ -306,7 +313,7 @@ def main() -> int:
     message = (
         "Plan-first gate: this action can modify state. Present the goal, files, "
         "concrete changes, exclusions, assumptions, and risks, then wait for a "
-        "standalone approval token."
+        "approval token on the last non-empty line of the user message."
     )
 
     if product == "cursor":

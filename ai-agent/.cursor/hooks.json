@@ -15,6 +15,12 @@
     ],
     "preToolUse": [
       {
+        "command": "bash ./hooks/strip-cursor-attribution.sh",
+        "failClosed": true,
+        "timeout": 5,
+        "matcher": "Shell"
+      },
+      {
         "command": "./hooks/gate-edit.sh",
         "failClosed": true,
         "timeout": 5,

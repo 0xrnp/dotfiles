@@ -28,10 +28,12 @@ repository code remain authoritative.
 | Dart or Flutter outside Homes | `dart-flutter-engineering` |
 | JavaScript or TypeScript outside Homes | `js-ts-engineering` |
 | React Native or Expo | `react-native` and `js-ts-engineering` |
-| Homes Dart/Flutter apps and packages | `homes-flutter` |
-| Homes API, Angular, or Node lambdas | `homes-js-ts` |
-| Branch, worktree, ticket, commit, or PR in Homes | `homes-git` |
-| PR body, docs, skill text, or user-facing prose | `unslop` |
+| Homes Dart/Flutter apps and packages | `homes-flutter` and `homes-git` |
+| Homes API, Angular, or Node lambdas | `homes-js-ts` and `homes-git` |
+| Branch, worktree, or ticket in Homes | `homes-git` |
+| Commit drafting, creation, or amend | `commit-authoring`; in Homes also `homes-git` |
+| PR drafting, preview, creation, or update | `pr-authoring`; in Homes also `homes-git` |
+| Docs, skill text, or other user-facing prose | `unslop` |
 | Before finishing non-trivial or multi-file code | `self-review` |
 | A repository has a narrower matching skill | That project skill |
 
@@ -46,3 +48,6 @@ language skill. A one-line rename does not.
 - Skills guide work. They do not authorize edits or external writes.
 - Repo > skill > memory. Do not invent APIs or approaches.
 - If no skill fits, use `~/ai-standards/AGENTS.md` and repository evidence.
+- Before first mutate on an implement task, obey the **Checkout gate** in
+  `~/ai-standards/AGENTS.md` (`WORKTREE` or `MAIN`). Homes path and ticket
+  details stay in `homes-git`.

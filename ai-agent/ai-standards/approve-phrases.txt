@@ -1,5 +1,7 @@
-# Case-insensitive. The trimmed user message must equal one token.
-# Valid for the current turn only. First token is primary.
+# Case-insensitive. The last non-empty line of the user message must equal
+# one token. Earlier lines may stack other control tokens (WORKTREE, MAIN,
+# NO TICKET, ticket ids). Valid for the current turn only. First token is
+# primary.
 gooo
 
 okgo

@@ -28,6 +28,45 @@ Classify the request before acting:
 3. A commit, push, PR, deploy, production operation, or external write requires
    separate explicit authorization.
 
+## Checkout gate
+
+Before the **first file write or other mutating implement step** in a chat, ask
+once where to work and wait. Do not invent an answer. Do not start editing until
+Rudra replies.
+
+Ask with these exact tokens (case-insensitive):
+
+- `WORKTREE` - create a new git worktree, then do all implementation only there
+- `MAIN` - edit the main checkout (or the already-open repo root) in place
+
+Skip the ask only when one of these is already true for this chat:
+
+- Rudra already named an existing worktree path to use
+- The session cwd or workspace is already inside a git worktree created for this
+  task
+- Cursor isolated / best-of-n already provided a worktree (do not nest another)
+
+If Rudra skips or answers something else, ask again once in the same short form.
+Do not proceed on silence.
+
+When `WORKTREE` is chosen:
+
+- Default path: `~/workspace/worktrees/<repo>/<name>/`
+- Homes repos (`~/workspace/homes/**`): use
+  `~/workspace/homes/worktrees/<repo>/<name>/` and follow `homes-git` for branch
+  naming and tickets
+- Report the worktree path. Do not edit the main checkout afterward for that
+  task
+
+This gate is independent of plan approval (`gooo` / `okgo` / `noplan`) and of
+Homes ticket asks. For a new implement task you typically need checkout choice
+and plan approval before mutating.
+
+Control tokens may be stacked in one message, one token per line. Honor every
+known control line in that message (`WORKTREE` / `MAIN`, a ticket id or
+`NO TICKET`, and a plan phrase). Plan approval unlocks when the last non-empty
+line is an approval phrase from `~/ai-standards/approve-phrases.txt`.
+
 ## Plan, approve, edit
 
 Before any file write or mutating command:
@@ -36,12 +75,13 @@ Before any file write or mutating command:
    tests, and nearby implementation.
 2. State the goal, files to touch, concrete changes per file, excluded work,
    assumptions, and risks.
-3. Stop and wait for a standalone token from
+3. Stop and wait for an approval token from
    `~/ai-standards/approve-phrases.txt`.
 4. Apply only the approved plan.
 
-An approval token is valid only when the trimmed user message equals that token,
-case-insensitively. A message that changes scope requires a revised plan.
+An approval token is valid when the last non-empty line of the user message
+equals that token, case-insensitively. Earlier lines may stack other control
+tokens. A message that changes scope requires a revised plan.
 
 ## Scope and impact
 
@@ -57,6 +97,53 @@ Do not fix it.
 
 Preserve every unrelated user change. Never make the working tree look clean by
 discarding work.
+
+## Commits
+
+Before creating or amending a commit:
+
+1. Inspect repository instructions, recent commit conventions, the complete
+   staged diff, and unstaged or untracked work that will be excluded.
+2. Show the staged diffstat and exact commit message. Explain mixed concerns,
+   missing verification, or an empty staged diff instead of hiding them.
+3. End the preview with `Waiting to commit with the message above.`
+4. Stop for separate explicit authorization.
+
+After a commit preview is pending, `gooo` / `okgo` / `yes` / "commit it"
+authorizes that preview only. Do not treat it as a new implement unlock unless
+the message also changes scope.
+
+Use the approved message unchanged without an editor or interactive prompt.
+If the staged content or message changes, show the revised preview and obtain
+authorization again. Never invent an issue reference, verification result, or
+attribution trailer. Load `commit-authoring` for this workflow (slash, named
+skill, or natural language about commit messages).
+
+## Pull requests
+
+Before pushing a branch for a PR, or creating or updating a PR:
+
+1. Inspect repository instructions and templates, the full branch diff against
+   the target, every included commit, working-tree state, and verification
+   evidence.
+2. Show the source and target, exact title, full body, and pending external
+   actions. Keep the body factual and useful to a reviewer.
+3. End the preview with `Waiting to open the PR with the title/body above.`
+4. Stop for separate explicit authorization.
+
+After a PR preview is pending, `gooo` / `okgo` / `yes` / "open the PR"
+authorizes that preview only. Do not treat it as a new implement unlock unless
+the message also changes scope. "No reviewer(s)" is a flag on the same
+workflow, not a separate skill.
+
+Use the approved title and body unchanged through explicit `gh`, `bkt`, or
+equivalent CLI arguments. Do not rely on autofill, an editor, or an interactive
+prompt. If HEAD, target, title, or body changes, show the revised preview and
+obtain authorization again. Load `pr-authoring` for this workflow (slash,
+named skill, or natural language about PRs).
+
+Never imply that uncommitted changes are included or that an unrun check passed.
+This preview is required even when `noplan` skipped the implementation plan.
 
 ## Evidence and judgment
 

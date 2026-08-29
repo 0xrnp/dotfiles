@@ -12,7 +12,7 @@ intended for the whole team.
 | Path | Purpose |
 |---|---|
 | `~/ai-standards/AGENTS.md` | Concise universal engineering and workflow policy |
-| `~/ai-standards/approve-phrases.txt` | Standalone tokens that unlock the current turn |
+| `~/ai-standards/approve-phrases.txt` | Tokens that unlock the current turn when they are the last non-empty line |
 | `~/.agents/skills/` | Portable, on-demand Agent Skills |
 | `~/.cursor/hooks.json` | Cursor enforcement and context injection |
 | `~/.claude/CLAUDE.md` | Claude import and skill routing |
@@ -24,8 +24,8 @@ versions, and local conventions.
 
 ## Install on this or a new machine
 
-Clone the dotfiles repository at `~/dotfiles`, install GNU Stow and Python 3,
-then run:
+Clone the dotfiles repository at `~/dotfiles`, install GNU Stow, Python 3, and
+`jq`, then run:
 
 ```bash
 ~/dotfiles/ai-agent/ai-standards/bootstrap.sh
@@ -68,9 +68,9 @@ reference material into one-hop `references/` files only when needed.
 
 ## Enforcement limits
 
-Hooks prevent supported mutating tools from running before a standalone
-approval token. They re-lock on each user prompt. Read-only shell commands
-remain available for inspection.
+Hooks prevent supported mutating tools from running before an approval
+token on the last non-empty line of the user prompt. They re-lock on each user
+prompt. Read-only shell commands remain available for inspection.
 
 Hooks cannot prove that a design is correct or reliably extract a file allowlist
 from an assistant's prose plan. Repository tests, type systems, linters, CI,
@@ -91,3 +91,7 @@ state. Keep examples credential-free.
 Cursor commit and PR attribution is disabled in CLI configuration and guarded
 by the shell hook. Also disable it in Cursor Settings under Git and PRs because
 the IDE can add attribution outside the shell.
+
+Cursor can still inject its commit trailer before shell execution even when
+both settings are disabled. The Shell `preToolUse` hook removes only the exact
+Cursor trailer before the shell safety gate evaluates the command.

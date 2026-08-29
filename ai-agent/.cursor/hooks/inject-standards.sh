@@ -6,7 +6,7 @@ set -u
 STANDARDS="${HOME}/ai-standards/AGENTS.md"
 PHRASES="${HOME}/ai-standards/approve-phrases.txt"
 
-PRIORITY='PRIORITY: classify the request, inspect evidence, present a file-level plan, and wait for a standalone approval token before any mutation. Keep the approved scope. Repository instructions outrank personal skills.'
+PRIORITY='PRIORITY: classify the request, inspect evidence, present a file-level plan, and wait for an approval token (last non-empty line of the user message) before any mutation. Control tokens may be stacked one per line. Keep the approved scope. Repository instructions outrank personal skills.'
 
 if [[ ! -r "$STANDARDS" ]]; then
   python3 -c 'import json,sys; print(json.dumps({"additional_context":sys.argv[1]}))' "$PRIORITY"
