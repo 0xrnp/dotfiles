@@ -145,6 +145,28 @@ named skill, or natural language about PRs).
 Never imply that uncommitted changes are included or that an unrun check passed.
 This preview is required even when `noplan` skipped the implementation plan.
 
+## PR review comments
+
+Before posting inline comments on someone else's Bitbucket pull request:
+
+1. Inspect the PR diff, existing comments, and checks. Load `pr-review`,
+   `pr-review-and-comment`, or `add-pr-comments` as appropriate.
+2. Show PR identity, each proposed inline comment (file, line side, body), and
+   the total count.
+3. End with:
+   `Waiting to post N inline comment(s) on <project-or-workspace>/<repo> PR #<id>.`
+4. Stop for separate explicit authorization.
+
+After a comment preview is pending, `gooo` / `okgo` / `yes` / "post the
+comments" authorizes that preview only. Do not treat it as a new implement
+unlock unless the message also changes scope.
+
+Post comments with explicit `bkt pr comment` arguments. Use the approved bodies
+unchanged. If the PR head or comment list changes, show the revised preview and
+obtain authorization again. Load `pr-review-and-comment` or `add-pr-comments`
+for this workflow (slash, named skill, or natural language about posting review
+comments).
+
 ## Evidence and judgment
 
 Treat the user's diagnosis and proposed solution as hypotheses. Verify them

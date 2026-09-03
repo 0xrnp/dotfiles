@@ -29,6 +29,7 @@ skills = home / ".agents" / "skills"
 gate = standards / "approval-gate.py"
 
 required_skills = {
+    "add-pr-comments",
     "blast-radius",
     "commit-authoring",
     "contract-design",
@@ -39,6 +40,8 @@ required_skills = {
     "js-ts-engineering",
     "mongo-aggregations",
     "pr-authoring",
+    "pr-review",
+    "pr-review-and-comment",
     "python-engineering",
     "react-native",
     "rust-engineering",
@@ -75,6 +78,7 @@ for required in (
     "last non-empty line",
     "Waiting to commit with the message above.",
     "Waiting to open the PR with the title/body above.",
+    "Waiting to post N inline comment(s) on",
 ):
     assert required in core, f"missing canonical standard: {required}"
 for required in ("`WORKTREE`", "`MAIN`", "~/workspace/worktrees/<repo>/<name>/"):
@@ -124,7 +128,26 @@ for required in (
 ):
     assert required in commit_skill, f"missing commit workflow requirement: {required}"
 assert "disable-model-invocation" not in commit_skill, "commit-authoring must allow ambient load"
+pr_review_skill = (skills / "pr-review" / "SKILL.md").read_text()
+for required in ("Findings table", "C1", "bkt pr diff", "disable-model-invocation"):
+    assert required in pr_review_skill, f"missing pr-review requirement: {required}"
+pr_review_comment_skill = (skills / "pr-review-and-comment" / "SKILL.md").read_text()
+for required in (
+    "Comment preview gate",
+    "bkt pr comment",
+    "Waiting to post N inline comment(s) on",
+):
+    assert required in pr_review_comment_skill, f"missing pr-review-and-comment requirement: {required}"
+add_pr_comments_skill = (skills / "add-pr-comments" / "SKILL.md").read_text()
+for required in (
+    "Comment preview gate",
+    "Waiting to post N inline comment(s) on",
+):
+    assert required in add_pr_comments_skill, f"missing add-pr-comments requirement: {required}"
 skill_guide = (skills / "using-skill-guide" / "SKILL.md").read_text()
+assert "`pr-review`" in skill_guide
+assert "`pr-review-and-comment`" in skill_guide
+assert "`add-pr-comments`" in skill_guide
 assert "`commit-authoring`; in Homes also `homes-git`" in skill_guide
 assert "`pr-authoring`; in Homes also `homes-git`" in skill_guide
 assert "`homes-js-ts` and `homes-git`" in skill_guide
@@ -200,6 +223,9 @@ try:
     assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g4"}) == "deny"
 
     assert cursor_permission("shell", {"command": "git status"}) == "allow"
+    assert cursor_permission("shell", {"command": "bkt pr view 42 --json"}) == "allow"
+    assert cursor_permission("shell", {"command": "bkt pr diff 42"}) == "allow"
+    assert cursor_permission("shell", {"command": "bkt pr comment 42 --text hi --file a.ts --to-line 1"}) == "deny"
     assert cursor_permission("shell", {"command": "git branch feature"}) == "deny"
     assert cursor_permission("shell", {"command": "python3 script.py"}) == "deny"
     assert cursor_permission("mcp", {"tool_name": "get_input_schema"}) == "allow"

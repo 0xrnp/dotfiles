@@ -15,9 +15,8 @@ The global **Checkout gate** (`WORKTREE` / `MAIN`) lives in `~/ai-standards/AGEN
 ## Ticket
 
 - If Rudra gives an ID (`EREV-831`, `INS-10`, …), use it in the branch name.
-- Before **branch / commit / PR** on a Homes repo: ask once for a ticket ID or `NO TICKET`. Wait if they skip.
-- A ticket id or `NO TICKET` may share the same message as checkout and plan
-  tokens (one token per line; plan phrase last). Honor it in that stack.
+- Before **branch / commit / PR** on a Homes repo: ask once for a ticket ID. Wait if they skip.
+- When there is no ticket, commits carry no marker — never write `NO TICKET`.
 - File edits in an already-approved plan may proceed without a ticket.
 - Never create a Linear issue yourself. Linear MCP: only after it is authenticated; otherwise the ticket ID comes from chat.
 - Comment/update Linear only when Rudra asks.

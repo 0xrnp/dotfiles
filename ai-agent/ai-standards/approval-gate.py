@@ -65,6 +65,8 @@ READ_ONLY_GIT = {
     "show",
     "status",
 }
+READ_ONLY_BKT_PR = {"checks", "diff", "list", "view"}
+READ_ONLY_BKT_PR_COMMENTS_MUTATIONS = {"delete", "reopen", "resolve", "rm"}
 VERSION_COMMANDS = {
     "bkt",
     "bun",
@@ -230,6 +232,27 @@ def is_read_only_shell(command: str) -> bool:
     ):
         return True
     if executable == "go" and parts == ["go", "version"]:
+        return True
+    if executable == "bkt":
+        return _is_read_only_bkt(parts)
+    return False
+
+
+def _is_read_only_bkt(parts: list[str]) -> bool:
+    if len(parts) == 2 and parts[1] in {"--version", "-V", "version"}:
+        return True
+    if len(parts) < 2:
+        return False
+    if parts[1] == "auth" and len(parts) >= 3 and parts[2] == "status":
+        return True
+    if parts[1] != "pr" or len(parts) < 3:
+        return False
+    subcommand = parts[2]
+    if subcommand in READ_ONLY_BKT_PR:
+        return True
+    if subcommand == "comments":
+        if len(parts) >= 4 and parts[3] in READ_ONLY_BKT_PR_COMMENTS_MUTATIONS:
+            return False
         return True
     return False
 

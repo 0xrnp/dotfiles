@@ -139,7 +139,11 @@
     "blinking": "on",
     "cursor_shape": "block",
   },
-  "icon_theme": "Soft Charmed Icons",
+  "icon_theme": {
+    "mode": "light",
+    "light": "Soft Charmed Icons",
+    "dark": "Soft Charmed Icons"
+  },
   "autosave": {
     "after_delay": {
       "milliseconds": 500,
@@ -154,7 +158,7 @@
   "ui_font_size": 14.0,
   "buffer_font_size": 13.0,
   "theme": {
-    "mode": "system",
+    "mode": "dark",
     "light": "Catppuccin Mocha",
     "dark": "Catppuccin Mocha (Blur) [Light]",
   },

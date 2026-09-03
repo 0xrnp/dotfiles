@@ -18,6 +18,7 @@ name = "catppuccin"        # Match Alacritty's Catppuccin Mocha
 [keys]
 # 1. Core Prefix
 prefix = "ctrl+space"
+detach = "prefix+q"           # Press Ctrl+Space, release, then press q
 
 # 2. Your Custom Pane Splits
 # By default, Herdr uses prefix+v and prefix+minus. 

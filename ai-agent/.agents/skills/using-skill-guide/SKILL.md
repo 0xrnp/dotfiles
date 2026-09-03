@@ -33,6 +33,9 @@ repository code remain authoritative.
 | Branch, worktree, or ticket in Homes | `homes-git` |
 | Commit drafting, creation, or amend | `commit-authoring`; in Homes also `homes-git` |
 | PR drafting, preview, creation, or update | `pr-authoring`; in Homes also `homes-git` |
+| Review someone else's Bitbucket PR (read-only) | `pr-review`; stack/domain skills as needed |
+| Review and post Bitbucket PR comments in one step | `pr-review-and-comment` |
+| Post finalized Bitbucket PR comments after discussion | `add-pr-comments` |
 | Docs, skill text, or other user-facing prose | `unslop` |
 | Before finishing non-trivial or multi-file code | `self-review` |
 | A repository has a narrower matching skill | That project skill |

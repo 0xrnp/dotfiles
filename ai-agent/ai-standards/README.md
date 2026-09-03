@@ -59,7 +59,8 @@ language, and repository without loading every skill.
 
 Primary language skills cover JavaScript/TypeScript, Dart/Flutter, Python,
 Terraform/HCL, and Rust. Cross-cutting skills cover contracts, stored shape,
-system design, impact analysis, MongoDB aggregation, prose, and final review.
+system design, impact analysis, MongoDB aggregation, prose, final review, and
+Bitbucket PR review (`pr-review`, `pr-review-and-comment`, `add-pr-comments`).
 Homes-specific skills apply only in Homes repositories.
 
 Add a skill only for a repeated workflow or non-obvious domain constraint.
