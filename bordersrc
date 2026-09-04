@@ -1,6 +1,15 @@
 #!/bin/bash
+# Recommended: soft green active, muted olive-yellow inactive
 borders \
-    active_color=0xff7dc4e4 \
-    inactive_color=0xffcba6f7 \
+    active_color=0xff7ed6a5 \
+    inactive_color=0xff8f8760 \
     width=6.0 \
     hidpi=on
+
+# Previous purple palette:
+# active_color=0xff7dc4e4
+# inactive_color=0xffcba6f7
+
+# Blue and gray palette:
+# active_color=0xff7dc4e4
+# inactive_color=0xff666666
