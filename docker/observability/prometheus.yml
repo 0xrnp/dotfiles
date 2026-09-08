@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Uncomment as you bring up services that expose /metrics
+  # - job_name: postgres
+  #   static_configs:
+  #     - targets: ["host.docker.internal:9187"]   # postgres_exporter sidecar
+
+  # - job_name: redis
+  #   static_configs:
+  #     - targets: ["host.docker.internal:9121"]   # redis_exporter sidecar
+
+  # - job_name: kafka
+  #   static_configs:
+  #     - targets: ["host.docker.internal:9308"]   # kafka_exporter sidecar

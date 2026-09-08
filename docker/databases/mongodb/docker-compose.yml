@@ -1,0 +1,16 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./dump:/dump
+      - mongodb_data:/data/db
+    restart:
+      always
+      # environment:
+    # - MONGO_INITDB_ROOT_USERNAME=admin
+    # - MONGO_INITDB_ROOT_PASSWORD=password
+
+volumes:
+  mongodb_data: # Define the named volume for MongoDB data

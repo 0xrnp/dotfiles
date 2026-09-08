@@ -1,0 +1,25 @@
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra_node
+    hostname: cassandra
+    restart: always
+    ports:
+      - "9042:9042" # CQL Native Transport Port
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      # - MAX_HEAP_SIZE=512M # Uncomment to limit memory usage
+      # - HEAP_NEWSIZE=100M  # Uncomment to limit memory usage
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE CLUSTER'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  cassandra_data:
+    driver: local

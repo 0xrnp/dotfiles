@@ -1,0 +1,26 @@
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    container_name: surrealdb
+    restart: unless-stopped
+    command:
+      - start
+      - --log=info
+      - --user=root
+      - --pass=root
+      - --bind=0.0.0.0:8000
+      - file:/data/database.db
+    ports:
+      - "8000:8000"
+    volumes:
+      - surrealdb_data:/data
+    healthcheck:
+      test: ["CMD", "/surreal", "is-ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  surrealdb_data:
+    driver: local
