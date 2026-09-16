@@ -2,17 +2,16 @@
 set -euo pipefail
 
 export PATH="/opt/homebrew/bin:$PATH"
+export PYTHONDONTWRITEBYTECODE=1
 H="$HOME"
 
 test -r "$H/ai-standards/AGENTS.md"
-test -r "$H/.pi/agent/extensions/ai-standards.ts"
 test -x "$H/.cursor/hooks/gate-shell.sh"
 test -x "$H/.cursor/hooks/gate-mcp.sh"
 test -x "$H/.cursor/hooks/gate-read.sh"
 test -r "$H/.cursor/hooks/strip-cursor-attribution.sh"
 test -r "$H/.agents/skills/using-skill-guide/SKILL.md"
 command -v jq >/dev/null
-command -v node >/dev/null
 
 python3 - "$H" <<'PY'
 from __future__ import annotations
@@ -36,6 +35,8 @@ required_skills = {
     "commit-authoring",
     "contract-design",
     "dart-flutter-engineering",
+    "delivery-engineering",
+    "go-engineering",
     "homes-flutter",
     "homes-git",
     "homes-js-ts",
@@ -50,6 +51,7 @@ required_skills = {
     "schema-design",
     "security-hardening",
     "self-review",
+    "service-reliability",
     "system-design",
     "systematic-debugging",
     "terraform-engineering",
@@ -61,8 +63,6 @@ required_skills = {
 canonical = (standards / "AGENTS.md").resolve()
 for target in (
     home / ".codex" / "AGENTS.md",
-    home / ".config" / "opencode" / "AGENTS.md",
-    home / ".pi" / "agent" / "AGENTS.md",
 ):
     assert target.resolve() == canonical, f"wrong canonical policy: {target}"
 
@@ -101,14 +101,21 @@ for name in required_skills:
     frontmatter = "\n".join(lines[1:end])
     assert f"name: {name}" in frontmatter, f"name mismatch: {path}"
     assert "description:" in frontmatter, f"missing description: {path}"
+    assert "disable-model-invocation:" not in frontmatter, (
+        f"personal skills must retain default automatic invocation: {path}"
+    )
     legacy = cursor / "skills" / name
     assert not (legacy.is_symlink() and not legacy.exists()), f"broken skill link: {legacy}"
+    native = home / ".claude" / "skills" / name
+    assert native.resolve() == path.parent.resolve(), f"wrong skill link: {native}"
 
 guide = (skills / "using-skill-guide" / "SKILL.md").read_text()
 assert "Checkout gate" not in guide
 assert "`systematic-debugging`" in guide
 assert "`verification-before-completion`" in guide
 assert "`security-hardening`" in guide
+for name in ("go-engineering", "service-reliability", "delivery-engineering"):
+    assert f"`{name}`" in guide, f"missing skill route: {name}"
 homes_git = (skills / "homes-git" / "SKILL.md").read_text()
 assert "Checkout gate" not in homes_git
 assert "~/workspace/homes/worktrees/<repo>/<name>/" in homes_git
@@ -162,6 +169,24 @@ with tempfile.TemporaryDirectory(prefix="agent-hooks-check-") as directory:
     assert kept["PreToolUse"] == [{"hooks": [{"command": "third-party tool"}]}]
     assert kept["Stop"][0]["hooks"] == [{"command": "third-party stop"}]
 
+    source = Path(directory) / "source"
+    (source / "example").mkdir(parents=True)
+    (source / "example" / "SKILL.md").write_text("example")
+    native = Path(directory) / "native"
+    assert module.link_skills(source, [native]) == 1
+    assert (native / "example").resolve() == (source / "example").resolve()
+    assert module.link_skills(source, [native]) == 0
+    conflict = Path(directory) / "conflict"
+    (conflict / "example").mkdir(parents=True)
+    untouched = Path(directory) / "untouched"
+    try:
+        module.link_skills(source, [untouched, conflict])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("installer replaced an unrelated skill")
+    assert not untouched.exists(), "partial installation before conflict detection"
+
 for product in ("claude", "codex"):
     live = json.loads((home / f".{product}" / ("settings.json" if product == "claude" else "hooks.json")).read_text())
     content = json.dumps(live)
@@ -211,4 +236,4 @@ assert updated["working_directory"] == "/tmp/example"
 print("OK")
 PY
 
-node --experimental-strip-types --test "$H/ai-standards/pi-approval.test.mjs"
+python3 -B "$H/ai-standards/hook-safety.test.py"

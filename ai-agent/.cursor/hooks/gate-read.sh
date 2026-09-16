@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Block reading secrets into the model. Fail open on parse errors.
-set -u
+# Block secret-like paths and malformed read requests.
+set -eu
 
 input=$(cat || true)
 
 python3 - "$input" <<'PY'
-import json, re, sys
+import json, os, re, sys
 from pathlib import Path
 
 raw = sys.argv[1] if len(sys.argv) > 1 else ""
@@ -15,9 +15,18 @@ except Exception:
     print('{"permission":"deny","user_message":"Blocked: read gate could not parse the request."}')
     raise SystemExit(0)
 
-path = d.get("file_path") or d.get("path") or ""
-name = Path(path).name.lower()
-full = path.replace("\\", "/").lower()
+path = (d.get("file_path") or d.get("path")) if isinstance(d, dict) else None
+cwd = d.get("cwd", os.getcwd()) if isinstance(d, dict) else None
+if not isinstance(path, str) or not path.strip() or not isinstance(cwd, str) or not cwd.strip():
+    print('{"permission":"deny","user_message":"Invalid read path."}')
+    raise SystemExit(0)
+
+try:
+    original = Path(path.replace("\\", "/")).expanduser()
+    resolved = (Path(cwd) / original).resolve()
+except (OSError, RuntimeError, ValueError):
+    print('{"permission":"deny","user_message":"Read path could not be resolved."}')
+    raise SystemExit(0)
 
 # Allow common non-secret examples
 allow_names = {
@@ -26,10 +35,6 @@ allow_names = {
     ".env.template",
     "credentials.example.json",
 }
-if name in allow_names:
-    print('{"permission":"allow"}')
-    raise SystemExit(0)
-
 deny_names = {
     ".env",
     ".env.local",
@@ -50,10 +55,16 @@ deny_path_bits = (
     "/.config/gcloud/",
 )
 
-blocked = name in deny_names or name.endswith(deny_suffixes) or any(b in full for b in deny_path_bits)
-# .env.* except allowed examples
-if re.fullmatch(r"\.env\..+", name) and name not in allow_names:
-    blocked = True
+def secret_like(candidate):
+    name = candidate.name.lower()
+    full = "/" + str(candidate).replace("\\", "/").lower().lstrip("/")
+    if any(bit in full for bit in deny_path_bits):
+        return True
+    if name in allow_names:
+        return False
+    return name in deny_names or name.endswith(deny_suffixes) or bool(re.fullmatch(r"\.env\..+", name))
+
+blocked = secret_like(original) or secret_like(resolved)
 
 if blocked:
     print(json.dumps({

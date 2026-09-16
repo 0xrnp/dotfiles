@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Retire owned plan-gate hooks without changing third-party configuration."""
+"""Expose owned skills and retire legacy hooks without replacing integrations."""
 
 from __future__ import annotations
 
@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 
 
-HOME = Path.home()
 GATE = '$HOME/ai-standards/approval-gate.py'
 
 
@@ -93,10 +92,36 @@ def reconcile(product: str, path: Path) -> bool:
     return changed
 
 
+def link_skills(source: Path, destinations: list[Path]) -> int:
+    """Create only missing links; preflight all conflicts before writing any."""
+    skills = sorted(path.parent for path in source.glob("*/SKILL.md"))
+    if not skills:
+        raise ValueError(f"No skills found in {source}")
+    pending = []
+    for destination in destinations:
+        for skill in skills:
+            target = destination / skill.name
+            if target.exists() or target.is_symlink():
+                if target.resolve() != skill.resolve():
+                    raise ValueError(f"Refusing to replace existing skill: {target}")
+            else:
+                pending.append((target, skill))
+    for target, skill in pending:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to(os.path.relpath(skill, target.parent), target_is_directory=True)
+    return len(pending)
+
+
 def main() -> None:
+    user_home = Path.home()
+    source = Path(__file__).resolve().parents[1] / ".agents" / "skills"
+    count = link_skills(source, [
+        user_home / ".claude" / "skills",
+    ])
+    print(f"skills: created {count} native discovery links")
     targets = {
-        "claude": HOME / ".claude" / "settings.json",
-        "codex": HOME / ".codex" / "hooks.json",
+        "claude": user_home / ".claude" / "settings.json",
+        "codex": user_home / ".codex" / "hooks.json",
     }
     for product, path in targets.items():
         status = "removed owned gate hooks" if reconcile(product, path) else "no owned gate hooks"

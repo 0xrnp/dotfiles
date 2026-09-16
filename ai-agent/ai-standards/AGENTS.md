@@ -156,24 +156,63 @@ production path was verified unless it was actually run.
 
 ## Engineering decisions
 
+For consequential changes, establish the user outcome, acceptance criteria,
+invariants, and actual constraints before choosing a design. Separate measured
+facts from assumptions. Prefer a small experiment when it can resolve a costly
+uncertainty. Do not invent traffic, availability targets, or future requirements.
+
 Prefer the standard library, platform capability, existing dependency, and
 existing pattern in that order. Add a dependency only for a concrete benefit
 that exceeds its maintenance, security, size, and compatibility costs.
-
-Keep independently changing concerns separate and behavior that changes
-together cohesive. Hide implementation details at real boundaries. Prefer
-composition when it is simpler, but preserve valid inheritance and framework
-extension points.
-
-Duplication is cheaper than the wrong abstraction. Remove repeated knowledge,
-not merely similar syntax. Introduce an abstraction only when callers need a
-stable boundary or demonstrated variation warrants it.
 
 Validate untrusted input at trust boundaries. Preserve established error,
 nullability, retry, cancellation, ordering, and side-effect contracts.
 
 Optimize from measurements unless known complexity, capacity, latency, memory,
 hardware, safety, or real-time constraints already require action.
+
+Existing patterns are evidence, not proof of correctness. If a pattern violates
+an invariant or trust boundary, explain the defect and make the smallest scoped
+correction. Compare credible alternatives for consequential choices, including
+maintenance and operational cost. Do not force a design exercise onto routine work.
+
+For service or infrastructure changes, identify failure, recovery, observability,
+and rollout behavior. Explain one useful tradeoff or invariant when it helps
+Rudra understand the decision; avoid a tutorial for every edit.
+
+### Coding principles
+
+KISS (Keep It Simple): choose the simplest design that satisfies the actual
+contracts and constraints. Fewer lines or layers do not necessarily mean less
+complexity. Keep failure handling and ownership understandable.
+
+YAGNI (You Aren't Gonna Need It): do not build speculative features, extension
+points, or configuration. Known security, recovery, and compatibility needs
+are current requirements, not optional future work.
+
+DRY (Don't Repeat Yourself): give each business rule an authoritative owner.
+Remove repeated knowledge, not merely similar syntax. Duplication is cheaper
+than the wrong abstraction. Share code when the same rule must change together;
+keep similar code separate when its meanings or reasons to change differ.
+
+Use SOLID to evaluate real boundaries, not to require an object-oriented design:
+
+- Single responsibility: keep independently changing concerns separate and
+  behavior that changes together cohesive, not one class per operation.
+- Open/closed: use stable extension points for demonstrated variation. Do not
+  build a plugin system for hypothetical variants or refuse a simple direct edit.
+- Liskov substitution: implementations must preserve their shared behavioral
+  contract, including errors and side effects, not merely match a signature.
+- Interface segregation: expose what consumers need; do not force them to depend
+  on unrelated capabilities or invent an interface for every concrete type.
+- Dependency inversion: keep policy from depending on volatile implementation
+  details where a boundary is useful. A function or module can be sufficient;
+  dependency-injection frameworks and extra layers are not requirements.
+
+Hide implementation details at real boundaries. Prefer composition when it is
+simpler, but preserve valid inheritance and framework extension points. When
+principles compete, use the priority order above and explain the concrete
+tradeoff if consequential. A principle's name alone does not justify a design.
 
 ## Data and contracts
 
@@ -239,3 +278,8 @@ For non-trivial work:
 
 Compilation alone does not prove behavior. Passing tests do not excuse a
 contract, security, data, or scope violation.
+
+Test observable contracts and failure cases. For a bug, prefer a focused
+regression that fails before the fix and passes after it. Missing existing tests
+do not justify skipping verification; use the smallest useful check and explain
+any tooling gap. Do not add tests that only restate implementation details.

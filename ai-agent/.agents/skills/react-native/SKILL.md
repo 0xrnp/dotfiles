@@ -6,7 +6,10 @@ paths: "**/*.{tsx,jsx},**/app.json,**/app.config.*,**/metro.config.*,**/eas.json
 
 # React Native
 
-There is no Homes RN app yet. Do not copy Flutter (`homes-flutter`) or Angular into RN. Do not invent a stack.
+Detect the repository from its manifests. Homes includes the `homes-ecosystem`
+monorepo with an Expo resident app and workspace packages. Read its package
+boundaries, scripts, and local rules. Do not copy Flutter or Angular architecture
+into React Native, or hard-code versions from this skill.
 
 **Order is mandatory.** Memory of RN/Expo APIs is untrusted.
 

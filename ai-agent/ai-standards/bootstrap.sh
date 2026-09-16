@@ -28,6 +28,6 @@ for skill in "${legacy_cursor_skills[@]}"; do
   fi
 done
 
-stow --dir="$dotfiles_root" --target="$HOME" --restow ai-agent codex opencode
+stow --dir="$dotfiles_root" --target="$HOME" --restow ai-agent codex
 python3 "$HOME/ai-standards/install-agent-hooks.py"
 "$HOME/ai-standards/check.sh"

@@ -75,5 +75,7 @@ Do not hand-edit `*.g.dart`, `*.freezed.dart`, `*.gen.dart`. After model/Freezed
 ## Verify
 
 - `dart analyze` on touched files (or the app's analyzer).
-- Run existing tests only if this feature already has them. Manage has almost none; do not add a suite unless asked.
+- Run focused existing tests and add a small regression check when changed
+  behavior warrants one, including in features without tests. Use current
+  tooling; do not create a broad suite or new framework for a small fix.
 - If codegen changed, confirm generated files updated and were not edited by hand.

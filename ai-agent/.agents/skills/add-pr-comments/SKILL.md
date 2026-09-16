@@ -4,7 +4,6 @@ description: >-
   Post finalized inline comments on a Bitbucket pull request after an earlier
   pr-review discussion. Use for /add-pr-comments or when Rudra asks to post
   only the agreed review comments.
-disable-model-invocation: true
 ---
 
 # Add PR comments (Bitbucket)

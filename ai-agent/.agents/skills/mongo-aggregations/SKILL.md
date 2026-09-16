@@ -9,7 +9,8 @@ description: >-
 
 # Mongo aggregations
 
-Write pipelines like this API. Copy a **neighbor in the same feature**. Do not invent a new `$lookup` graph.
+Inspect a neighbor in the same feature, then verify its stage order against
+this query's semantics. Reuse conventions, not an unrelated query plan.
 
 ## MongoDB access
 
@@ -29,11 +30,20 @@ Plugin docs (`search-knowledge`) are always safe to read.
 
 1. Open the closest existing `.aggregate()` in that feature (payments, helpdesk, visitors, …). Match its stages and collection names.
 2. Prefer `find` / `findOne` if that neighbor does not aggregate.
-3. `$match` first. Non-public data: `project` in that `$match`.
-4. `$sort` / `$skip` / `$limit` **before** `$lookup` when you are paging a list (see `payments.service.ts`).
-5. `$lookup` only for fields the response actually needs. Foreign field must already be indexed in `src/models` (or you add that index in the same change, via `schema-design`).
+3. Push source-field filters early where legal. Some stages such as `$geoNear`
+   must come first. Preserve tenant filtering, including foreign tenant-owned
+   data, rather than assuming the outer `project` filter secures every join.
+4. Page before `$lookup` only when it enriches an already selected page without
+   changing eligibility, sort order, or row cardinality. If a filter or sort
+   depends on joined data, apply it before pagination. Keep count and page
+   semantics aligned and use a stable tie-breaker for ordering.
+5. Join fields needed for filtering, sorting, authorization, or output. Inspect
+   indexes for the actual join predicate; an index declaration is not evidence
+   that it is deployed or used. Propose needed index changes via schema-design.
 6. `$project` at the end to shape the response. Do not `$project` away fields before a `$match` that needs them.
-7. Unbounded `$unwind` of a huge array is a bug. So is `$lookup` inside a loop in JS.
+7. Inspect `$unwind` expansion and repeated per-row queries for unbounded work.
+   Validate missing joins, empty arrays, duplicates, and page boundaries with
+   fixtures; do not trade correct results for a cheaper stage order.
 
 ## Slow?
 

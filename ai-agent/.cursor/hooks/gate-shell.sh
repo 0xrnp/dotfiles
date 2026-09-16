@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Block dangerous commands and ask before high-risk shell actions.
-set -u
+set -eu
 
 input=$(cat || true)
 
@@ -14,11 +14,22 @@ except Exception:
     print('{"permission":"deny","user_message":"Invalid shell hook payload."}')
     raise SystemExit(0)
 
-cmd = d.get("command") or ""
-if not isinstance(cmd, str):
+cmd = d.get("command") if isinstance(d, dict) else None
+if not isinstance(cmd, str) or not cmd.strip():
     print('{"permission":"deny","user_message":"Invalid shell command."}')
     raise SystemExit(0)
 c = " ".join(cmd.split())
+
+# Recognize common global options without treating values as subcommands.
+# This is a command-pattern guard, not a shell parser or a sandbox.
+arg = r'''(?:'[^']*'|"[^"]*"|[^\s;&|]+)'''
+git = (
+    r"\bgit\s+(?:"
+    rf"(?:-C|-c|--git-dir|--work-tree|--namespace)\s+{arg}\s+|"
+    rf"--(?:git-dir|work-tree|namespace|config-env)={arg}\s+|"
+    r"--(?:no-pager|paginate|bare|no-optional-locks)\s+)*"
+)
+terraform = rf"\bterraform\s+(?:-chdir={arg}\s+)?"
 
 def deny(msg="Blocked dangerous shell command by personal hook."):
     print(json.dumps({
@@ -47,7 +58,7 @@ attrib_pat = re.compile(
     r"@cursor\.com|"
     r"made with cursor)",
 )
-if re.search(r"\bgit\s+commit\b", c) and attrib_pat.search(cmd):
+if re.search(git + r"commit\b", c) and attrib_pat.search(cmd):
     deny("Blocked: never add Cursor/AI Co-authored-by or Made-with trailers. Commit without attribution.")
 if re.search(r"\bgh\s+pr\s+create\b", c) and attrib_pat.search(cmd):
     deny("Blocked: never add Cursor attribution to PRs.")
@@ -75,9 +86,9 @@ if re.search(rf"{rm_prefix}\s+(?:{target_re})\s+{rm_flags}", c):
     deny("Blocked: refusing rm against root/home/system paths.")
 
 # --- Hard deny: other catastrophic ---
-if re.search(r"git\s+push\b[^;&|]*(\s--force\b|\s-f\b)[^;&|]*\b(main|master)\b", c):
+if re.search(git + r"push\b[^;&|]*(\s--force\b|\s-f\b)[^;&|]*\b(main|master)\b", c):
     deny("Blocked: force-push to main/master.")
-if re.search(r"git\s+reset\s+--hard\b", c):
+if re.search(git + r"reset\s+--hard\b", c):
     deny("Blocked: git reset --hard.")
 if re.search(r"\bmkfs\.", c) or re.search(r"\bdd\s+if=.*\bof=/dev/", c):
     deny("Blocked: disk-destroying command.")
@@ -91,14 +102,17 @@ if re.search(r"(curl|wget|fetch)\b[^;&|\n]*\|\s*python(?:3)?\b", c):
     deny("Blocked: pipe remote download into python.")
 
 # --- Ask: git writes (user must explicitly want commits/pushes) ---
-if re.search(r"\bgit\s+commit\b", c):
+if re.search(git + r"commit\b", c):
     ask("Git commit. Confirm and ensure there is no Cursor Co-authored-by trailer.")
-if re.search(r"\bgit\s+push\b", c):
+if re.search(git + r"push\b", c):
     ask("Git push. Confirm before allowing.")
 
+if re.search(r"\b(?:gh|bkt)\b[^;&|]*\b(?:pr|issue|release)\s+(?:create|edit|update|comment|merge|approve|close|delete|reopen|decline)\b", c):
+    ask("External forge write. Confirm the target and approved preview before allowing.")
+
 # --- Ask: infra / publish nukes ---
-if re.search(r"\bterraform\s+(apply|destroy)\b", c):
-    ask("Terraform apply or destroy. Confirm before allowing.")
+if re.search(terraform + r"(?:apply|destroy|plan|import|refresh|state)\b", c):
+    ask("Terraform state or environment access. Confirm the named environment before allowing.")
 if re.search(r"\bkubectl\s+delete\b", c):
     ask("kubectl delete. Confirm before allowing.")
 if re.search(r"\b(npm|pnpm|yarn)\s+publish\b", c):

@@ -6,6 +6,10 @@ paths: "**/*.{ts,tsx,js,jsx},**/package.json,**/angular.json"
 
 # Homes JS/TS
 
+Also read `js-ts-engineering` for shared language and runtime guidance. Repository
+instructions and the Homes conventions below take precedence for architecture,
+commands, and supported versions.
+
 Match the repo you are in. API and Angular are different codebases. Do not copy Flutter patterns here. Do not add NgRx, a new ORM, or a new folder tree.
 
 `any` is the enemy. Inferred types are the friend. Adapt to change at the boundary instead of rewriting every caller. Avoid one-line functions that only cast. Touch least code; match the file's style.

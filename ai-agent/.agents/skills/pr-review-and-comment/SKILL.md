@@ -4,14 +4,14 @@ description: >-
   Review someone else's Bitbucket pull request and post inline comments after a
   mandatory preview. Use for /pr-review-and-comment, or when Rudra asks to
   review a PR and post comments in one step.
-disable-model-invocation: true
 ---
 
 # PR review and comment (Bitbucket)
 
 Use when Rudra runs `/pr-review-and-comment` or asks to review a Bitbucket PR
-and post inline comments. This skill authorizes posting comments only after the
-preview gate below. It does not authorize approve, merge, decline, or code edits.
+and post inline comments. Loading this skill does not authorize posting; obtain
+separate approval after the preview below. It does not authorize approve, merge,
+decline, or code edits.
 
 ## Review phase
 

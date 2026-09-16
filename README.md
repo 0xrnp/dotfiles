@@ -22,7 +22,6 @@ My personal dotfiles for macOS, managed with [GNU Stow](https://www.gnu.org/soft
 | `lazygit` | Git TUI |
 | `luvus` | AI agent terminal multiplexer |
 | `nvim` | Neovim editor |
-| `opencode` | AI coding tool |
 | `raycast` | Spotlight replacement |
 | `sketchybar` | Menu bar customizer |
 | `swiftpm` | Swift package manager |
@@ -86,7 +85,7 @@ git clone git@github-personal:0xrnp/dotfiles.git ~/dotfiles
 ```bash
 cd ~/dotfiles
 
-for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter git ghostty htop jgit lazygit luvus nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter git ghostty htop jgit lazygit luvus nvim raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```
@@ -145,7 +144,7 @@ git push
 cd ~/dotfiles
 git pull
 
-for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter git ghostty htop jgit lazygit luvus nvim opencode raycast sketchybar swiftpm yazi zed zellij; do
+for tool in aerospace ai-agent atuin bat borders btop cursor eza flutter git ghostty htop jgit lazygit luvus nvim raycast sketchybar swiftpm yazi zed zellij; do
   stow --adopt --target="$HOME" "$tool"
 done
 ```

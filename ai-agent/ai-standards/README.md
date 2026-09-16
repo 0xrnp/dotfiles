@@ -13,12 +13,10 @@ intended for the whole team.
 |---|---|
 | `~/ai-standards/AGENTS.md` | Concise universal engineering and workflow policy |
 | `~/.agents/skills/` | Portable, on-demand Agent Skills |
+| `~/.claude/skills/` | Native discovery links to the owned shared skills |
 | `~/.cursor/hooks.json` | Cursor enforcement and context injection |
 | `~/.claude/CLAUDE.md` | Claude import and skill routing |
 | `~/.codex/AGENTS.md` | Codex pointer to the canonical policy |
-| `~/.pi/agent/AGENTS.md` | Pi pointer to the canonical policy |
-| `~/.pi/agent/extensions/ai-standards.ts` | Pi per-action safety checks |
-| `~/.config/opencode/AGENTS.md` | OpenCode pointer to the canonical policy |
 
 Repository instructions override personal skills for architecture, commands,
 versions, and local conventions.
@@ -26,7 +24,7 @@ versions, and local conventions.
 ## Install on this or a new machine
 
 Clone the dotfiles repository at `~/dotfiles`, install GNU Stow, Python 3,
-`jq`, and Node.js 22.19+ (for the Pi regression tests), then run:
+and `jq`, then run:
 
 ```bash
 ~/dotfiles/ai-agent/ai-standards/bootstrap.sh
@@ -34,11 +32,11 @@ Clone the dotfiles repository at `~/dotfiles`, install GNU Stow, Python 3,
 
 The bootstrap:
 
-1. Restows `ai-agent`, `codex`, and `opencode`.
+1. Restows `ai-agent` and `codex`.
 2. Removes only the legacy personal plan-gate hooks from Claude and Codex
    without replacing Orca, Superset, Herdr, marketplace, or local settings.
-3. Exposes Pi's global context file and per-action safety extension without
-   changing Pi providers, models, packages, or credentials.
+3. Links owned skills into Claude's native skill directory. Existing
+   unrelated skills are preserved; a conflicting name stops installation.
 4. Runs the complete configuration check.
 
 Run `~/ai-standards/check.sh` at any time to detect broken links, stale
@@ -61,11 +59,24 @@ Agents initially see skill names and short descriptions. They load a
 language, and repository without loading every skill.
 
 Primary language skills cover JavaScript/TypeScript, Dart/Flutter, Python,
-Terraform/HCL, and Rust. Cross-cutting skills cover contracts, stored shape,
+Terraform/HCL, Rust, and Go. Cross-cutting skills cover contracts, stored shape,
 system design, impact analysis, MongoDB aggregation, prose, final review,
 systematic debugging, verification before completion, security hardening, and
 Bitbucket PR review (`pr-review`, `pr-review-and-comment`, `add-pr-comments`).
 Homes-specific skills apply only in Homes repositories.
+
+`service-reliability` covers backend failure, concurrency, queue, and recovery
+behavior. `delivery-engineering` covers CI, containers, artifact promotion,
+rollout, and rollback. Use them when those concerns change, not on every edit.
+Version and architecture decisions come from project manifests and local rules;
+the Homes stack includes both Flutter apps and the Expo `homes-ecosystem` repo.
+
+Codex and Cursor support the shared user skill directory. Claude uses its native
+links. Personal skills permit automatic selection from ordinary task requests;
+Rudra does not need to remember skill names or slash commands. Selection loads
+guidance, not permission to commit, publish, deploy, or post comments. The
+existing request and preview gates still apply. Restart existing agent sessions
+after installation so their discovery context reflects changes.
 
 Add a skill only for a repeated workflow or non-obvious domain constraint.
 Keep the main file small, include when not to use it, and move detailed
@@ -88,8 +99,9 @@ host's Plan mode when a review pause is wanted.
 
 Cursor keeps shell, MCP, and read safety hooks, but no prompt-session or
 local-edit approval gate. Its shell hook blocks catastrophic commands and asks
-before commits, pushes, publish, infra apply, recursive force-delete, or secret
-reads. Its MCP hook asks before mutating or privileged calls. These checks apply
+before recognized commits, pushes, forge writes, publish, Terraform environment
+access, recursive force-delete, or secret reads. Its MCP hook asks before
+mutating, privileged, database, or unclassified calls. These checks apply
 only where Cursor loads local user hooks; they do not cover Cursor Cloud Agents,
 remote workers, or Tab. Cursor ACP in Zed does not need a bound
 `beforeSubmitPrompt` event for ordinary editing.
@@ -98,18 +110,33 @@ Claude and Codex use their own sandbox and approval controls. The installer
 removes only the old personal prompt/tool/stop gate commands from their live
 settings. It leaves third-party hooks untouched.
 
-Pi's extension runs the same shell and MCP safety hooks before relevant tool
-calls. An `ask` decision uses Pi's interactive or RPC confirmation UI; without
-one, it blocks. Local edit tools proceed without a token. Pi has no built-in
-sandbox, and neither this extension nor a Git worktree restricts arbitrary
-filesystem access. Cursor SDK native tools still use Cursor's local safety
-hooks when user hooks are enabled. Other extensions or custom tools can have
-side effects that these name-based checks cannot identify.
+These hooks are best-effort checks, not a security boundary. Shell aliases,
+scripts, interpreters, unusual option forms, and tools with misleading names
+can escape classification. File-read hooks do not control all shell/search
+reads and cannot eliminate filesystem races. Local edit tools still rely on
+task scope and host permissions. Use host/OS sandboxing and least-privilege
+credentials for actual isolation. A recognized read name does not authorize
+access to a live database or production target.
 
 The old `approval-gate.py` and `approve-phrases.txt` are retained but inactive,
 so the pending work on them is not discarded. Offline checks verify configuration
 and hook decisions; they do not send model requests or prove end-to-end ACP
 behavior. Use an operating-system sandbox or container for untrusted work.
+
+## Verification
+
+`check.sh` validates configuration and installed links, tests installer
+idempotency/conflict handling, and runs Cursor hook regression cases using
+inert commands and synthetic paths. It never executes the represented Git,
+infrastructure, or database actions.
+
+[Engineering behavior checks](engineering-evals.md) separately exercise reasoning
+about concurrency, idempotency, pagination, compatibility, scope, and authorization.
+Keep their results distinct from static validation. A model/host must actually
+run a scenario before it can be marked passed.
+
+Discovery references: [Codex](https://developers.openai.com/codex/skills),
+[Cursor](https://cursor.com/docs/skills), and [Claude](https://code.claude.com/docs/en/skills).
 
 ## Secrets
 

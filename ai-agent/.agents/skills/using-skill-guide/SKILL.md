@@ -16,17 +16,20 @@ repository code remain authoritative.
 | Situation | Read |
 |---|---|
 | Question-only request | Nothing. Answer without editing. |
-| Rudra named a skill | That skill only |
+| Rudra named a skill | That skill, plus other skills only for distinct risks in the task |
 | Existing behavior, shared code, or "what else breaks" | `blast-radius` |
 | Stored shape, collection, table, field, index, or migration | `schema-design` |
 | API, DTO, event, CLI, module, or public type contract | `contract-design` |
 | New subsystem, cross-service flow, reliability, scale, or architecture | `system-design` |
 | Mongo aggregation or list/dashboard query | `mongo-aggregations` |
 | Rust, `.rs`, `Cargo.toml`, or toolchains | `rust-engineering` |
+| Go, `.go`, `go.mod`, `go.work`, or Go failures | `go-engineering` |
+| Request/worker lifecycle, queues, retries, overload, or recovery | `service-reliability` |
+| CI, container builds, artifact promotion, rollout, or rollback | `delivery-engineering` |
 | Python, `.py`, `pyproject.toml`, FastAPI, or Pydantic | `python-engineering` |
 | Terraform, HCL, state, providers, or modules | `terraform-engineering` |
 | Dart or Flutter outside Homes | `dart-flutter-engineering` |
-| JavaScript or TypeScript outside Homes | `js-ts-engineering` |
+| JavaScript or TypeScript | `js-ts-engineering`; add `homes-js-ts` in Homes |
 | React Native or Expo | `react-native` and `js-ts-engineering` |
 | Homes Dart/Flutter apps and packages | `homes-flutter` and `homes-git` |
 | Homes API, Angular, or Node lambdas | `homes-js-ts` and `homes-git` |

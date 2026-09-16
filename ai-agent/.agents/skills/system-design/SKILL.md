@@ -18,6 +18,11 @@ not need a system-design exercise.
    consistency, privacy, cost, team ownership, and supported platforms.
 4. Mark unknown constraints. Do not invent scale.
 
+Estimate capacity with units and stated assumptions when it changes the design:
+peak arrival rate, service time, concurrency, storage growth, and cost. Use
+measurements or a small experiment to test the limiting assumption. Compare
+complexity and operability with the closest simpler design.
+
 ## Design the failure path
 
 For each boundary, consider:

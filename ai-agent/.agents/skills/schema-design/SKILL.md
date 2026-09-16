@@ -39,6 +39,12 @@ queried in several directions. Normalize by default. Denormalize only for a
 named query and define how the copy stays correct. Index real filter, join, and
 sort paths.
 
+For concurrent writes, identify which constraint, transaction isolation level,
+or conditional update enforces each invariant. Application prechecks alone do
+not enforce uniqueness. Consider lock duration and write amplification before
+adding an index. For migrations, plan additive changes, bounded resumable
+backfills, mixed-version readers/writers, and validation before removing old data.
+
 **Document:** treat the document as the atomic unit. Embed bounded data owned and
 fetched with its parent. Reference shared, independently updated, or unbounded
 data. Avoid table-per-entity translation and unbounded arrays.

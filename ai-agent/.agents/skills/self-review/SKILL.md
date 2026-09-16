@@ -1,7 +1,6 @@
 ---
 name: self-review
 description: Review the final diff for scope, correctness, contracts, unsafe assumptions, and missing evidence. Use before finishing non-trivial or multi-file changes.
-disable-model-invocation: true
 ---
 
 # Self-review
@@ -34,8 +33,12 @@ actual diff, not the intended change.
 ## Design
 
 - The implementation matches neighboring architecture.
-- Every new abstraction has more value than direct code.
-- Repeated syntax was not mistaken for repeated knowledge.
+- KISS/YAGNI: added complexity and extension points serve demonstrated needs;
+  known safety and recovery requirements were not dismissed as future work.
+- DRY: shared business rules have a clear owner; similar syntax with different
+  reasons to change was not forced into one abstraction.
+- SOLID: relevant boundaries preserve consumer contracts and hide implementation
+  details; principle names did not justify unnecessary interfaces or layers.
 - Transport, domain, and persistence types are separated only when their
   semantics differ.
 - Comments explain invariants or reasons, not syntax.
@@ -45,6 +48,7 @@ actual diff, not the intended change.
 Apply only the matching skill's checklist. In particular:
 
 - Rust: ownership, panic, unsafe, async, feature, target, and MSRV implications.
+- Go: error identity, goroutine ownership, cancellation, races, and resources.
 - JS/TS: boundary types, runtime validation, async errors, and no unjustified
   `any` or assertion.
 - Dart/Flutter: null safety, async lifecycle, state ownership, and generated
@@ -53,6 +57,8 @@ Apply only the matching skill's checklist. In particular:
   and repository tooling.
 - Terraform: state movement, replacement risk, provider versions, secrets, and
   plan scope.
+- Services/delivery: bounded work, duplicate effects, recovery, telemetry,
+  artifact identity, mixed-version compatibility, and rollback.
 
 ## Report
 

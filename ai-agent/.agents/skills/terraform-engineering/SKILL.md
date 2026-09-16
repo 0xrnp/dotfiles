@@ -35,6 +35,10 @@ CI workflow, and repository documentation before proposing a change.
 - Inspect replacement, dependency, IAM, networking, data-loss, downtime, and
   rollback implications.
 - Do not use `-target` as a routine workflow or bypass lifecycle protections.
+- Inspect state locking, drift, recovery, and concurrent pipeline execution.
+  A saved plan is sensitive and can become stale; bind an authorized apply to
+  the reviewed environment, artifact, and change. Use delivery-engineering for
+  pipeline permissions, artifact promotion, and rollout/recovery design.
 
 ## Before code
 

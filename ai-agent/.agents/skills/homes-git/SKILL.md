@@ -1,7 +1,6 @@
 ---
 name: homes-git
 description: Branching, worktrees, and Linear tickets for ASBL Homes git repos. Use when implementing in Homes, or when creating a branch, worktree, commit, PR, or when Rudra mentions a ticket ID.
-disable-model-invocation: true
 ---
 
 # Homes git

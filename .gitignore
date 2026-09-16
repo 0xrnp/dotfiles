@@ -58,10 +58,6 @@ swiftpm/.config/swiftpm/security
 # Flutter auto-generated
 flutter/.config/flutter/tool_state
 
-# opencode
-opencode/.config/opencode/.DS_Store
-opencode/.config/opencode/skills/.DS_Store
-
 # MDB database files
 *.mdb
 tmux/.config/tmux/plugins/
@@ -78,9 +74,6 @@ herdr/.config/herdr/sessions/
 raycast/.config/raycast/extensions/
 raycast/.config/raycast/node-compile-cache/
 raycast/.config/raycast/aster-endpoint.json
-
-# Herdr-generated opencode plugin (written into the stowed dir)
-opencode/.config/opencode/plugins/herdr-agent-state.js
 
 # Luvus — runtime state (preferences + manifests are stowed)
 luvus/.luvus/session.json

@@ -87,9 +87,7 @@ VERSION_COMMANDS = {
     "mix",
     "node",
     "npm",
-    "opencode",
     "php",
-    "pi",
     "pnpm",
     "python",
     "python3",
@@ -368,7 +366,7 @@ def cursor_result(allowed: bool, message: str, *, advisory: str = "") -> None:
 def main() -> int:
     if len(sys.argv) != 3:
         print(
-            "usage: approval-gate.py <cursor|claude|codex|pi> "
+            "usage: approval-gate.py <cursor|claude|codex> "
             "<prompt|lock|tool|edit|shell|mcp>",
             file=sys.stderr,
         )
@@ -376,29 +374,6 @@ def main() -> int:
 
     product, event = sys.argv[1:3]
     data = load_input()
-    # SDK prompts can contain replayed history, not the raw Pi user message.
-    # Local Cursor hooks must consult Pi's delivered-input state instead.
-    pi_session = (
-        os.environ.get("AI_STANDARDS_PI_SESSION", "") if product == "cursor" else ""
-    )
-    if pi_session:
-        if event in {"prompt", "lock"}:
-            print("{}")
-            return 0
-        read_only = event == "shell" and is_read_only_shell(command_from(data))
-        if event == "tool":
-            read_only = tool_name(data) in {"read", "readfile", "glob", "grep", "ls"}
-            if tool_name(data) in SHELL_TOOLS:
-                read_only = is_read_only_shell(command_from(data))
-        allowed = bool(data) and (
-            read_only or is_approved("pi", {"session_id": pi_session})
-        )
-        cursor_result(
-            allowed,
-            "Pi plan-first gate: wait for a delivered human approval token before modifying state.",
-        )
-        return 0
-
     if event == "prompt":
         relock_or_approve(product, data)
         if product == "cursor":
@@ -417,7 +392,7 @@ def main() -> int:
     )
     # Hard when a prompt/lock already bound this session. Soft fail-open only for
     # Cursor when a tool carries a session id but no prompt bound it (ACP in Zed).
-    # Claude/Codex/Pi always deliver bound prompts when hooks run; keep them hard.
+    # Claude/Codex always deliver bound prompts when hooks run; keep them hard.
     needs_approval = requires_approval(event, data)
     approved = is_approved(product, data)
     soft = (

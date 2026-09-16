@@ -25,6 +25,13 @@ this skill is about evidence.
 4. Report commands actually run and their outcomes. Say what was skipped and
    why.
 
+Choose checks that can refute the change: negative authorization cases,
+boundaries, duplicate requests, cancellation, or concurrent updates when
+relevant. A test that reproduces the implementation's algorithm is weak evidence.
+For bug fixes, verify the regression fails on the prior behavior when practical.
+Use a focused fixture or reproduction if there is no suitable test harness;
+explain the remaining gap instead of claiming compilation proves correctness.
+
 ## Red flags
 
 - "Should work" without a command or reproduction.

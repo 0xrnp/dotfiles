@@ -1,7 +1,6 @@
 ---
 name: unslop
 description: Cut AI tells from PR bodies, docs, skill text, and other user-facing prose. Use when writing those. Not required before ordinary code edits.
-disable-model-invocation: true
 ---
 
 # Unslop

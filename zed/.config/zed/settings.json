@@ -26,12 +26,6 @@
       "enable_lsp_tasks": true,
     },
   },
-  "language_models": {
-    "opencode": {
-      "show_free_models": false,
-      "show_zen_models": false,
-    },
-  },
   "status_bar": {
     "show_active_file": true,
   },

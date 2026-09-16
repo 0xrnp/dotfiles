@@ -4,7 +4,6 @@ description: >-
   Deep read-only review of someone else's Bitbucket pull request with file,
   line, severity, and fix guidance. Use for /pr-review, a Bitbucket PR URL or
   id, or when Rudra asks to review a colleague's PR without posting comments.
-disable-model-invocation: true
 ---
 
 # PR review (Bitbucket, read-only)
@@ -44,13 +43,12 @@ bkt pr checks <id>
 bkt pr comments <id> --details
 ```
 
-For deep review (callers, contracts, stored shape, tests), check out the PR
-branch in a dedicated worktree. Obey the checkout gate in
-`~/ai-standards/AGENTS.md`. Homes repos use
-`~/workspace/homes/worktrees/<repo>/pr-<id>/`. Other repos use
-`~/workspace/worktrees/<repo>/pr-<id>/`. Use `bkt pr checkout <id>` inside
-that clone. Checkout requires separate approval; diff-only review is acceptable
-when checkout is blocked.
+For deep review, use the supplied checkout when it already contains the PR
+head, or inspect Git objects and forge file contents without changing it.
+Follow checkout placement in `~/ai-standards/AGENTS.md`. Do not switch a dirty
+checkout or create a nested worktree. If a separate checkout is needed, explain
+why and resolve the location with Rudra; report a diff-only review as partial
+when callers or tests could not be inspected.
 
 Load stack and domain skills from the repository:
 
@@ -58,7 +56,7 @@ Load stack and domain skills from the repository:
 - Homes API/Angular/Node: `homes-js-ts`, `homes-git`
 - Other Dart/Flutter: `dart-flutter-engineering`
 - Other JS/TS: `js-ts-engineering`
-- Python, Rust, Terraform: matching language skill
+- Python, Rust, Go, Terraform: matching language skill
 - Persisted or API contract changes: `schema-design`, `contract-design`
 - Shared or cross-cutting behavior: `blast-radius`
 
