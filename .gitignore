@@ -10,6 +10,8 @@
 *.tmp
 tool_state
 *.zwc
+__pycache__/
+*.py[cod]
 
 # Secrets — never commit
 .env
@@ -70,6 +72,12 @@ tmux/.config/tmux/tmux.conf.bak
 herdr/.config/herdr/session.json
 herdr/.config/herdr/release-notes.json
 herdr/.config/herdr/*.sock
+herdr/.config/herdr/sessions/
+
+# Raycast installed extensions and local runtime state
+raycast/.config/raycast/extensions/
+raycast/.config/raycast/node-compile-cache/
+raycast/.config/raycast/aster-endpoint.json
 
 # Herdr-generated opencode plugin (written into the stowed dir)
 opencode/.config/opencode/plugins/herdr-agent-state.js

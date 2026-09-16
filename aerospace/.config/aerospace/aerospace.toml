@@ -57,7 +57,7 @@ persistent-workspaces = [
 # ]
 #
 after-startup-command = [
-  'exec-and-forget borders active_color=0xff7dc4e4 inactive_color=0xffcba6f7 width=6.0 hidpi=on',
+  'exec-and-forget borders active_color=0xff7ed6a5 inactive_color=0xff8f8760 width=6.0 hidpi=on',
   'workspace 1',                                                                                  # main (laptop)
   'workspace P',                                                                                  # left DELL
   'workspace 0',                                                                                  # right DELL
@@ -303,13 +303,13 @@ alt-shift-l = ['join-with right', 'mode main']
 # Open Ghostty
 # alt-shift-g = 'exec-and-forget open -n /Applications/Ghostty.app'
 
-[[on-window-detected]]
-if.workspace = 'P'
-run = ['layout floating']
+# [[on-window-detected]]
+# if.workspace = 'P'
+# run = ['layout floating']
 
-[[on-window-detected]]
-if.workspace = '6'
-run = ['layout floating']
+# [[on-window-detected]]
+# if.workspace = '6'
+# run = ['layout floating']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'alacritty'
@@ -326,10 +326,6 @@ run = 'move-node-to-workspace S'
 [[on-window-detected]]
 if.app-name-regex-substring = "zen"
 run = 'move-node-to-workspace S'
-
-[[on-window-detected]]
-if.app-name-regex-substring = "warp"
-run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
 if.app-name-regex-substring = "compass"
@@ -374,3 +370,11 @@ run = 'move-node-to-workspace P'
 [[on-window-detected]]
 if.app-name-regex-substring = "dia"
 run = 'move-node-to-workspace I'
+
+[[on-window-detected]]
+if.app-name-regex-substring = "cursor"
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.reminders'
+run = 'layout floating'

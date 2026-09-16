@@ -56,12 +56,11 @@ Before any push or PR write, show:
 5. The pending push and PR actions, including whether reviewers will be omitted.
 6. End with: `Waiting to open the PR with the title/body above.`
 
-Stop for separate explicit authorization. After this preview is pending,
-`gooo` / `okgo` / `yes` / "open the PR" authorizes that preview only, not a
-new implement unlock unless the message also changes scope. If the user revises
-the draft, show the complete preview again. Immediately before execution,
-re-check HEAD, target, title, and body. Any change requires a new preview and
-authorization.
+Stop for separate explicit authorization. After this preview is pending, a
+clear user request to open the PR authorizes that preview only. No control
+token is required. If the user revises the draft, show the complete preview
+again. Immediately before execution, re-check HEAD, target, title, and body.
+Any change requires a new preview and authorization.
 
 ## Execute
 

@@ -41,8 +41,9 @@ Before any `bkt pr comment` command, show:
 4. End with:
    `Waiting to post N inline comment(s) on <project-or-workspace>/<repo> PR #<id>.`
 
-Stop for separate explicit authorization. After this preview is pending,
-`gooo` / `okgo` / `yes` / "post the comments" authorizes that preview only.
+Stop for separate explicit authorization. After this preview is pending, a
+clear user request to post authorizes that preview only. No control token is
+required.
 Re-check the PR head and diff if the branch moved; any change requires a new
 preview.
 

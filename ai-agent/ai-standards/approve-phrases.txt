@@ -1,10 +1,16 @@
-# Case-insensitive. The last non-empty line of the user message must equal
-# one token. Earlier lines may stack other control tokens (WORKTREE, MAIN,
-# NO TICKET, ticket ids). Valid for the current turn only. First token is
-# primary.
+# Compatibility copy of the portable approval phrases in AGENTS.md.
+# Agents must read the inline list in AGENTS.md, rather than rely on this path.
+# Case-insensitive. The last non-empty line of the user message must equal one
+# token. Earlier lines may stack other control tokens (WORKTREE, MAIN, NO
+# TICKET, ticket ids). Valid for the current turn only.
 gooo
 
-okgo
+proceed
 
-# Skip the plan write-up only when the requested scope is already exact.
+approve
+
+goahead
+
+# This is a separate control token. It skips the plan write-up only when the
+# requested scope is already exact. It is not an approval phrase.
 noplan

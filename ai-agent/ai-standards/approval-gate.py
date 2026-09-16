@@ -89,6 +89,7 @@ VERSION_COMMANDS = {
     "npm",
     "opencode",
     "php",
+    "pi",
     "pnpm",
     "python",
     "python3",
@@ -148,37 +149,82 @@ def prompt_approves(prompt: str) -> bool:
     return bool(lines) and lines[-1].casefold() in phrases()
 
 
+def write_session_state(product: str, data: dict[str, Any], *, approved: bool) -> None:
+    state = state_path(product, data)
+    if state is None:
+        return
+    STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    payload = {
+        "product": product,
+        "generation_id": generation_id(data) if approved else "",
+        "approved": approved,
+    }
+    state.write_text(json.dumps(payload), encoding="utf-8")
+    state.chmod(0o600)
+
+
+def prompt_bound(product: str, data: dict[str, Any]) -> bool:
+    """True when a prompt or lock event already bound this session identity."""
+    state = state_path(product, data)
+    return state is not None and state.is_file()
+
+
 def relock_or_approve(product: str, data: dict[str, Any]) -> bool:
     state = state_path(product, data)
     if state is None:
         return False
 
-    state.unlink(missing_ok=True)
     prompt = data.get("prompt")
-    if not isinstance(prompt, str) or not prompt_approves(prompt):
-        return False
+    approved = isinstance(prompt, str) and prompt_approves(prompt)
+    write_session_state(product, data, approved=approved)
+    return approved
 
-    STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
-    payload = {"generation_id": generation_id(data)}
-    state.write_text(json.dumps(payload), encoding="utf-8")
-    state.chmod(0o600)
-    return True
+
+def payload_grants_approval(
+    payload: dict[str, Any], current_generation: str, direct_match: bool
+) -> bool:
+    if payload.get("approved") is False:
+        return False
+    approved_generation = payload.get("generation_id")
+    if not isinstance(approved_generation, str):
+        approved_generation = ""
+    # Legacy approve files omit "approved" and only store generation_id.
+    if "approved" in payload and payload.get("approved") is not True:
+        return False
+    if current_generation:
+        return approved_generation == current_generation or (
+            direct_match and approved_generation == ""
+        )
+    return direct_match and approved_generation == ""
 
 
 def is_approved(product: str, data: dict[str, Any]) -> bool:
     state = state_path(product, data)
-    if state is None:
-        return False
-    try:
-        payload = json.loads(state.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return False
-
+    candidates: list[Path] = []
+    if state is not None:
+        candidates.append(state)
+    # Cursor prompt vs tool payloads can disagree on conversation_id. Only use
+    # the generation ID fallback for Cursor and never share approvals between
+    # products.
     current_generation = generation_id(data)
-    approved_generation = payload.get("generation_id")
-    if current_generation:
-        return approved_generation == current_generation
-    return approved_generation == ""
+    if product == "cursor" and current_generation and STATE_DIR.is_dir():
+        candidates.extend(sorted(STATE_DIR.glob("*.json")))
+
+    seen: set[Path] = set()
+    for path in candidates:
+        if path in seen or not path.is_file():
+            continue
+        seen.add(path)
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict) or payload.get("product") != product:
+            continue
+        direct_match = state is not None and path == state
+        if payload_grants_approval(payload, current_generation, direct_match):
+            return True
+    return False
 
 
 def command_from(data: dict[str, Any]) -> str:
@@ -258,7 +304,10 @@ def _is_read_only_bkt(parts: list[str]) -> bool:
 
 
 def tool_name(data: dict[str, Any]) -> str:
-    value = data.get("tool_name") or data.get("tool") or data.get("name")
+    value = (
+        data.get("tool_name") or data.get("toolName")
+        or data.get("tool") or data.get("name")
+    )
     return value.casefold() if isinstance(value, str) else ""
 
 
@@ -286,9 +335,20 @@ def requires_approval(event: str, data: dict[str, Any]) -> bool:
     return normalized in EDIT_TOOLS
 
 
-def cursor_result(allowed: bool, message: str) -> None:
+SOFT_ADVISORY = (
+    "Plan-first still applies, but no bound prompt reached the approval hook "
+    "for this session (common under Cursor ACP in Zed). The hard gate cannot "
+    "verify a last-line token here. Present a file-level plan and wait for an "
+    "explicit go-ahead before mutating."
+)
+
+
+def cursor_result(allowed: bool, message: str, *, advisory: str = "") -> None:
     if allowed:
-        print('{"permission":"allow"}')
+        if advisory:
+            print(json.dumps({"permission": "allow", "agent_message": advisory}))
+        else:
+            print('{"permission":"allow"}')
         return
     print(
         json.dumps(
@@ -308,7 +368,7 @@ def cursor_result(allowed: bool, message: str) -> None:
 def main() -> int:
     if len(sys.argv) != 3:
         print(
-            "usage: approval-gate.py <cursor|claude|codex> "
+            "usage: approval-gate.py <cursor|claude|codex|pi> "
             "<prompt|lock|tool|edit|shell|mcp>",
             file=sys.stderr,
         )
@@ -316,6 +376,28 @@ def main() -> int:
 
     product, event = sys.argv[1:3]
     data = load_input()
+    # SDK prompts can contain replayed history, not the raw Pi user message.
+    # Local Cursor hooks must consult Pi's delivered-input state instead.
+    pi_session = (
+        os.environ.get("AI_STANDARDS_PI_SESSION", "") if product == "cursor" else ""
+    )
+    if pi_session:
+        if event in {"prompt", "lock"}:
+            print("{}")
+            return 0
+        read_only = event == "shell" and is_read_only_shell(command_from(data))
+        if event == "tool":
+            read_only = tool_name(data) in {"read", "readfile", "glob", "grep", "ls"}
+            if tool_name(data) in SHELL_TOOLS:
+                read_only = is_read_only_shell(command_from(data))
+        allowed = bool(data) and (
+            read_only or is_approved("pi", {"session_id": pi_session})
+        )
+        cursor_result(
+            allowed,
+            "Pi plan-first gate: wait for a delivered human approval token before modifying state.",
+        )
+        return 0
 
     if event == "prompt":
         relock_or_approve(product, data)
@@ -323,26 +405,37 @@ def main() -> int:
             print("{}")
         return 0
     if event == "lock":
-        state = state_path(product, data)
-        if state is not None:
-            state.unlink(missing_ok=True)
+        write_session_state(product, data, approved=False)
         if product == "cursor":
             print("{}")
         return 0
 
-    allowed = bool(data) and (
-        not requires_approval(event, data) or is_approved(product, data)
-    )
     message = (
         "Plan-first gate: this action can modify state. Present the goal, files, "
         "concrete changes, exclusions, assumptions, and risks, then wait for a "
         "approval token on the last non-empty line of the user message."
     )
+    # Hard when a prompt/lock already bound this session. Soft fail-open only for
+    # Cursor when a tool carries a session id but no prompt bound it (ACP in Zed).
+    # Claude/Codex/Pi always deliver bound prompts when hooks run; keep them hard.
+    needs_approval = requires_approval(event, data)
+    approved = is_approved(product, data)
+    soft = (
+        product == "cursor"
+        and bool(data)
+        and needs_approval
+        and not approved
+        and bool(session_id(data))
+        and not prompt_bound(product, data)
+    )
+    allowed = bool(data) and (not needs_approval or approved or soft)
 
     if product == "cursor":
-        cursor_result(allowed, message)
+        cursor_result(allowed, message, advisory=SOFT_ADVISORY if soft else "")
         return 0
     if allowed:
+        if soft:
+            print(SOFT_ADVISORY, file=sys.stderr)
         return 0
     print(message, file=sys.stderr)
     return 2

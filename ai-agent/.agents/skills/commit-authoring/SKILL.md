@@ -53,11 +53,10 @@ Before any commit write, show:
 4. Whether the operation creates or amends a commit.
 5. End with: `Waiting to commit with the message above.`
 
-Stop for separate explicit authorization. After this preview is pending,
-`gooo` / `okgo` / `yes` / "commit it" authorizes that preview only, not a new
-implement unlock unless the message also changes scope. Immediately before
-execution, re-check the staged content and message. Any change requires a new
-preview and authorization.
+Stop for separate explicit authorization. After this preview is pending, a
+clear user request to commit authorizes that preview only. No control token is
+required. Immediately before execution, re-check the staged content and
+message. Any change requires a new preview and authorization.
 
 ## Execute
 

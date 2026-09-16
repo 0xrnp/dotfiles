@@ -57,8 +57,8 @@
   "agent_servers": {
     "codex-acp": {
       "default_config_options": {
-        "model": "gpt-5.6-luna",
-        "reasoning_effort": "medium"
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high"
       },
       "type": "registry"
     },
@@ -69,18 +69,6 @@
         "model": "default"
       },
       "type": "registry"
-    },
-    "pi-acp": {
-      "default_config_options": {
-        "model": "cursor/default"
-      },
-      "env": {
-        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-      },
-      "type": "registry"
-    },
-    "claude-acp": {
-      "type": "registry",
     },
   },
   "buffer_font_weight": 500.0,
@@ -171,6 +159,6 @@
   "theme": {
     "mode": "dark",
     "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha",
+    "dark": "Catppuccin Mocha (Blur) [Heavy]",
   },
 }

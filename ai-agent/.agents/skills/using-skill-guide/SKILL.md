@@ -37,6 +37,9 @@ repository code remain authoritative.
 | Review and post Bitbucket PR comments in one step | `pr-review-and-comment` |
 | Post finalized Bitbucket PR comments after discussion | `add-pr-comments` |
 | Docs, skill text, or other user-facing prose | `unslop` |
+| Tests fail, builds break, or behavior is wrong | `systematic-debugging` |
+| About to claim done on non-trivial code | `verification-before-completion` then `self-review` |
+| Auth, input, tenancy, payments, or external trust boundaries | `security-hardening` |
 | Before finishing non-trivial or multi-file code | `self-review` |
 | A repository has a narrower matching skill | That project skill |
 
@@ -51,6 +54,5 @@ language skill. A one-line rename does not.
 - Skills guide work. They do not authorize edits or external writes.
 - Repo > skill > memory. Do not invent APIs or approaches.
 - If no skill fits, use `~/ai-standards/AGENTS.md` and repository evidence.
-- Before first mutate on an implement task, obey the **Checkout gate** in
-  `~/ai-standards/AGENTS.md` (`WORKTREE` or `MAIN`). Homes path and ticket
-  details stay in `homes-git`.
+- Use the checkout supplied by the user or host. For Homes-specific paths,
+  branches, and ticket rules, read `homes-git`.

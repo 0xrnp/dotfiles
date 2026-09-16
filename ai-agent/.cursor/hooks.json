@@ -7,24 +7,12 @@
         "timeout": 5
       }
     ],
-    "beforeSubmitPrompt": [
-      {
-        "command": "./hooks/gate-plan-approve.sh",
-        "timeout": 5
-      }
-    ],
     "preToolUse": [
       {
         "command": "bash ./hooks/strip-cursor-attribution.sh",
         "failClosed": true,
         "timeout": 5,
         "matcher": "Shell"
-      },
-      {
-        "command": "./hooks/gate-edit.sh",
-        "failClosed": true,
-        "timeout": 5,
-        "matcher": "Write|StrReplace|Delete|EditNotebook|Edit|ApplyPatch|DeleteFile|SearchReplace"
       }
     ],
     "beforeShellExecution": [
@@ -45,12 +33,6 @@
       {
         "command": "./hooks/gate-read.sh",
         "failClosed": true,
-        "timeout": 5
-      }
-    ],
-    "stop": [
-      {
-        "command": "python3 \"$HOME/ai-standards/approval-gate.py\" cursor lock",
         "timeout": 5
       }
     ]

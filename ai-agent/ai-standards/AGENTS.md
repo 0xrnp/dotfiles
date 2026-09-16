@@ -24,64 +24,38 @@ repositories, DTOs, layers, factories, or patterns merely to appear rigorous.
 Classify the request before acting:
 
 1. A question, explanation, review, diagnosis, or status request is read-only.
-2. A change request permits investigation and planning, not immediate editing.
+2. A change request permits investigation, planning, local implementation, and
+   verification within the requested scope.
 3. A commit, push, PR, deploy, production operation, or external write requires
    separate explicit authorization.
 
-## Checkout gate
+## Checkout placement
 
-Before the **first file write or other mutating implement step** in a chat, ask
-once where to work and wait. Do not invent an answer. Do not start editing until
-Rudra replies.
+Work in the checkout the user or host supplied. An isolated worktree from
+Cursor, Zed, or another host is already the task checkout; do not nest another.
+If Rudra names a path or asks for a worktree, use it and report the path.
+Otherwise use the open checkout, preserving unrelated changes. Ask where to
+work only when concurrent edits or overlapping dirty files make that choice
+material. A worktree isolates Git state, not filesystem permissions.
 
-Ask with these exact tokens (case-insensitive):
+For a requested new worktree, default to
+`~/workspace/worktrees/<repo>/<name>/`. Homes repos use
+`~/workspace/homes/worktrees/<repo>/<name>/` and `homes-git` ticket and branch
+rules. Never silently move uncommitted main-checkout changes into a worktree.
 
-- `WORKTREE` - create a new git worktree, then do all implementation only there
-- `MAIN` - edit the main checkout (or the already-open repo root) in place
+## Plan, then implement
 
-Skip the ask only when one of these is already true for this chat:
+Before changing files, inspect the real path, instructions, callers, contracts,
+tests, and nearby implementation. For non-trivial work, present the goal, files,
+concrete changes, exclusions, assumptions, and risks in a progress update or
+the first response. Then implement and verify in the same turn. The plan is a
+visible scope boundary, not an approval request or a file that must be saved.
+For a trivial scoped edit, a brief notice is enough.
 
-- Rudra already named an existing worktree path to use
-- The session cwd or workspace is already inside a git worktree created for this
-  task
-- Cursor isolated / best-of-n already provided a worktree (do not nest another)
-
-If Rudra skips or answers something else, ask again once in the same short form.
-Do not proceed on silence.
-
-When `WORKTREE` is chosen:
-
-- Default path: `~/workspace/worktrees/<repo>/<name>/`
-- Homes repos (`~/workspace/homes/**`): use
-  `~/workspace/homes/worktrees/<repo>/<name>/` and follow `homes-git` for branch
-  naming and tickets
-- Report the worktree path. Do not edit the main checkout afterward for that
-  task
-
-This gate is independent of plan approval (`gooo` / `okgo` / `noplan`) and of
-Homes ticket asks. For a new implement task you typically need checkout choice
-and plan approval before mutating.
-
-Control tokens may be stacked in one message, one token per line. Honor every
-known control line in that message (`WORKTREE` / `MAIN`, a ticket id or
-`NO TICKET`, and a plan phrase). Plan approval unlocks when the last non-empty
-line is an approval phrase from `~/ai-standards/approve-phrases.txt`.
-
-## Plan, approve, edit
-
-Before any file write or mutating command:
-
-1. Inspect the real code path, repository instructions, callers, contracts,
-   tests, and nearby implementation.
-2. State the goal, files to touch, concrete changes per file, excluded work,
-   assumptions, and risks.
-3. Stop and wait for an approval token from
-   `~/ai-standards/approve-phrases.txt`.
-4. Apply only the approved plan.
-
-An approval token is valid when the last non-empty line of the user message
-equals that token, case-insensitively. Earlier lines may stack other control
-tokens. A message that changes scope requires a revised plan.
+Pause only when a missing user choice would materially change the result,
+ownership is unclear, there is an overlapping edit conflict, or an action
+needs separate authorization. If discoveries change scope, explain the revised
+plan before proceeding within the user's request; ask before expanding it.
 
 ## Scope and impact
 
@@ -109,9 +83,8 @@ Before creating or amending a commit:
 3. End the preview with `Waiting to commit with the message above.`
 4. Stop for separate explicit authorization.
 
-After a commit preview is pending, `gooo` / `okgo` / `yes` / "commit it"
-authorizes that preview only. Do not treat it as a new implement unlock unless
-the message also changes scope.
+After a commit preview is pending, a clear user request to commit authorizes
+that preview only. No special token or final-line syntax is needed.
 
 Use the approved message unchanged without an editor or interactive prompt.
 If the staged content or message changes, show the revised preview and obtain
@@ -131,10 +104,9 @@ Before pushing a branch for a PR, or creating or updating a PR:
 3. End the preview with `Waiting to open the PR with the title/body above.`
 4. Stop for separate explicit authorization.
 
-After a PR preview is pending, `gooo` / `okgo` / `yes` / "open the PR"
-authorizes that preview only. Do not treat it as a new implement unlock unless
-the message also changes scope. "No reviewer(s)" is a flag on the same
-workflow, not a separate skill.
+After a PR preview is pending, a clear user request to open it authorizes that
+preview only. No special token or final-line syntax is needed. "No reviewer(s)"
+is a flag on the same workflow, not a separate skill.
 
 Use the approved title and body unchanged through explicit `gh`, `bkt`, or
 equivalent CLI arguments. Do not rely on autofill, an editor, or an interactive
@@ -143,7 +115,7 @@ obtain authorization again. Load `pr-authoring` for this workflow (slash,
 named skill, or natural language about PRs).
 
 Never imply that uncommitted changes are included or that an unrun check passed.
-This preview is required even when `noplan` skipped the implementation plan.
+This preview is required even when implementation needed only a brief plan.
 
 ## PR review comments
 
@@ -157,9 +129,8 @@ Before posting inline comments on someone else's Bitbucket pull request:
    `Waiting to post N inline comment(s) on <project-or-workspace>/<repo> PR #<id>.`
 4. Stop for separate explicit authorization.
 
-After a comment preview is pending, `gooo` / `okgo` / `yes` / "post the
-comments" authorizes that preview only. Do not treat it as a new implement
-unlock unless the message also changes scope.
+After a comment preview is pending, a clear user request to post authorizes
+that preview only. No special token or final-line syntax is needed.
 
 Post comments with explicit `bkt pr comment` arguments. Use the approved bodies
 unchanged. If the PR head or comment list changes, show the revised preview and

@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-# Require plan approval for mutating shell and block dangerous commands.
+# Block dangerous commands and ask before high-risk shell actions.
 set -u
 
 input=$(cat || true)
-policy=$(printf '%s' "$input" | python3 "$HOME/ai-standards/approval-gate.py" cursor shell)
-if [[ "$policy" == *'"permission": "deny"'* ]]; then
-    printf '%s\n' "$policy"
-    exit 0
-fi
 
 python3 - "$input" <<'PY'
 import json, re, sys
@@ -16,10 +11,13 @@ raw = sys.argv[1] if len(sys.argv) > 1 else ""
 try:
     d = json.loads(raw)
 except Exception:
-    print('{"permission":"allow"}')
+    print('{"permission":"deny","user_message":"Invalid shell hook payload."}')
     raise SystemExit(0)
 
 cmd = d.get("command") or ""
+if not isinstance(cmd, str):
+    print('{"permission":"deny","user_message":"Invalid shell command."}')
+    raise SystemExit(0)
 c = " ".join(cmd.split())
 
 def deny(msg="Blocked dangerous shell command by personal hook."):

@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-# Require plan approval and confirmation for mutating or privileged MCP calls.
+# Confirm mutating or privileged MCP calls.
 set -u
 
 input=$(cat || true)
-policy=$(printf '%s' "$input" | python3 "$HOME/ai-standards/approval-gate.py" cursor mcp)
-if [[ "$policy" == *'"permission": "deny"'* ]]; then
-  printf '%s\n' "$policy"
-  exit 0
-fi
 
 tool=$(printf '%s' "$input" | python3 -c '
 import json,sys
@@ -18,8 +13,16 @@ except Exception:
   raise SystemExit(0)
 name=(d.get("toolName") or d.get("tool_name") or d.get("name") or "")
 server=(d.get("serverName") or d.get("server") or d.get("mcpServer") or "")
+if not isinstance(name, str) or not isinstance(server, str):
+  print("")
+  raise SystemExit(0)
 print(f"{server} {name}".strip())
 ' 2>/dev/null || true)
+
+if [[ -z "$tool" ]]; then
+  printf '%s\n' '{"permission":"deny","user_message":"Invalid MCP hook payload."}'
+  exit 0
+fi
 
 lower=$(printf '%s' "$tool" | tr '[:upper:]' '[:lower:]')
 

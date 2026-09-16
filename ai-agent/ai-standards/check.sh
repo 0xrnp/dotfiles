@@ -1,32 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export PATH="/opt/homebrew/bin:$PATH"
 H="$HOME"
 
 test -r "$H/ai-standards/AGENTS.md"
-test -r "$H/ai-standards/approve-phrases.txt"
-test -r "$H/ai-standards/approval-gate.py"
-test -x "$H/.cursor/hooks/gate-edit.sh"
-test -x "$H/.cursor/hooks/gate-plan-approve.sh"
+test -r "$H/.pi/agent/extensions/ai-standards.ts"
+test -x "$H/.cursor/hooks/gate-shell.sh"
+test -x "$H/.cursor/hooks/gate-mcp.sh"
+test -x "$H/.cursor/hooks/gate-read.sh"
 test -r "$H/.cursor/hooks/strip-cursor-attribution.sh"
 test -r "$H/.agents/skills/using-skill-guide/SKILL.md"
 command -v jq >/dev/null
+command -v node >/dev/null
 
 python3 - "$H" <<'PY'
 from __future__ import annotations
 
-import hashlib
+import importlib.util
 import json
-import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 
 home = Path(sys.argv[1])
 standards = home / "ai-standards"
 skills = home / ".agents" / "skills"
-gate = standards / "approval-gate.py"
+cursor = home / ".cursor"
 
 required_skills = {
     "add-pr-comments",
@@ -46,291 +48,167 @@ required_skills = {
     "react-native",
     "rust-engineering",
     "schema-design",
+    "security-hardening",
     "self-review",
     "system-design",
+    "systematic-debugging",
     "terraform-engineering",
     "unslop",
     "using-skill-guide",
+    "verification-before-completion",
 }
 
-phrases = [
-    line.strip()
-    for line in (standards / "approve-phrases.txt").read_text().splitlines()
-    if line.strip() and not line.lstrip().startswith("#")
-]
-assert phrases == ["gooo", "okgo", "noplan"], phrases
-
-core = (standards / "AGENTS.md").read_text()
 canonical = (standards / "AGENTS.md").resolve()
-assert (home / ".codex" / "AGENTS.md").resolve() == canonical
-assert (home / ".config" / "opencode" / "AGENTS.md").resolve() == canonical
+for target in (
+    home / ".codex" / "AGENTS.md",
+    home / ".config" / "opencode" / "AGENTS.md",
+    home / ".pi" / "agent" / "AGENTS.md",
+):
+    assert target.resolve() == canonical, f"wrong canonical policy: {target}"
+
+core = canonical.read_text()
 for required in (
-    "Plan, approve, edit",
-    "Checkout gate",
+    "Checkout placement",
+    "Plan, then implement",
     "Scope and impact",
     "Commits",
     "Pull requests",
-    "Repository code outranks skills",
-    "Use the approved message unchanged",
-    "Use the approved title and body unchanged",
-    "Do not use em dashes",
-    "~/.agents/skills/using-skill-guide/SKILL.md",
-    "last non-empty line",
+    "No special token or final-line syntax is needed",
     "Waiting to commit with the message above.",
     "Waiting to open the PR with the title/body above.",
     "Waiting to post N inline comment(s) on",
 ):
-    assert required in core, f"missing canonical standard: {required}"
-for required in ("`WORKTREE`", "`MAIN`", "~/workspace/worktrees/<repo>/<name>/"):
-    assert required in core, f"missing checkout gate requirement: {required}"
+    assert required in core, f"missing standard: {required}"
+assert "gooo" not in core
+assert "last non-empty line" not in core
 
-required_paths = [skills / name / "SKILL.md" for name in required_skills]
-for path in [standards / "AGENTS.md", standards / "README.md", *required_paths]:
-    text = path.read_text()
-    assert "\u2014" not in text and "\u2013" not in text, f"em dash found in {path}"
+found = {path.parent.name for path in skills.glob("*/SKILL.md")}
+assert not required_skills - found, f"missing skills: {sorted(required_skills - found)}"
+for path in [
+    standards / "AGENTS.md",
+    standards / "README.md",
+    standards / "cursor-user-rules.md",
+    *(skills / name / "SKILL.md" for name in required_skills),
+]:
+    content = path.read_text()
+    assert "\u2014" not in content and "\u2013" not in content, f"dash found: {path}"
 
-found_skills = {path.parent.name for path in skills.glob("*/SKILL.md")}
-missing = required_skills - found_skills
-assert not missing, f"missing skills: {sorted(missing)}"
 for name in required_skills:
-    legacy = home / ".cursor" / "skills" / name
-    assert not (legacy.is_symlink() and not legacy.exists()), f"broken legacy link: {legacy}"
-
-for path in required_paths:
+    path = skills / name / "SKILL.md"
     lines = path.read_text().splitlines()
-    assert lines and lines[0] == "---", f"missing frontmatter: {path}"
+    assert lines[0] == "---", f"missing frontmatter: {path}"
     end = lines.index("---", 1)
-    metadata = {}
-    for line in lines[1:end]:
-        if ": " in line:
-            key, value = line.split(": ", 1)
-            metadata[key] = value
-    assert metadata.get("name") == path.parent.name, f"name mismatch: {path}"
-    assert metadata.get("description"), f"missing description: {path}"
+    frontmatter = "\n".join(lines[1:end])
+    assert f"name: {name}" in frontmatter, f"name mismatch: {path}"
+    assert "description:" in frontmatter, f"missing description: {path}"
+    legacy = cursor / "skills" / name
+    assert not (legacy.is_symlink() and not legacy.exists()), f"broken skill link: {legacy}"
 
-pr_skill = (skills / "pr-authoring" / "SKILL.md").read_text()
-for required in (
-    "Preview gate",
-    "--body-file",
-    "--description",
-    "Waiting to open the PR with the title/body above.",
-    "no reviewer",
-):
-    assert required in pr_skill, f"missing PR workflow requirement: {required}"
-assert "disable-model-invocation" not in pr_skill, "pr-authoring must allow ambient load"
-commit_skill = (skills / "commit-authoring" / "SKILL.md").read_text()
-for required in (
-    "Preview gate",
-    "complete staged diff",
-    "Do not bypass hooks",
-    "Waiting to commit with the message above.",
-    "propose the exact `git add` paths",
-):
-    assert required in commit_skill, f"missing commit workflow requirement: {required}"
-assert "disable-model-invocation" not in commit_skill, "commit-authoring must allow ambient load"
-pr_review_skill = (skills / "pr-review" / "SKILL.md").read_text()
-for required in ("Findings table", "C1", "bkt pr diff", "disable-model-invocation"):
-    assert required in pr_review_skill, f"missing pr-review requirement: {required}"
-pr_review_comment_skill = (skills / "pr-review-and-comment" / "SKILL.md").read_text()
-for required in (
-    "Comment preview gate",
-    "bkt pr comment",
-    "Waiting to post N inline comment(s) on",
-):
-    assert required in pr_review_comment_skill, f"missing pr-review-and-comment requirement: {required}"
-add_pr_comments_skill = (skills / "add-pr-comments" / "SKILL.md").read_text()
-for required in (
-    "Comment preview gate",
-    "Waiting to post N inline comment(s) on",
-):
-    assert required in add_pr_comments_skill, f"missing add-pr-comments requirement: {required}"
-skill_guide = (skills / "using-skill-guide" / "SKILL.md").read_text()
-assert "`pr-review`" in skill_guide
-assert "`pr-review-and-comment`" in skill_guide
-assert "`add-pr-comments`" in skill_guide
-assert "`commit-authoring`; in Homes also `homes-git`" in skill_guide
-assert "`pr-authoring`; in Homes also `homes-git`" in skill_guide
-assert "`homes-js-ts` and `homes-git`" in skill_guide
-assert "`homes-flutter` and `homes-git`" in skill_guide
-assert "Checkout gate" in skill_guide
+guide = (skills / "using-skill-guide" / "SKILL.md").read_text()
+assert "Checkout gate" not in guide
+assert "`systematic-debugging`" in guide
+assert "`verification-before-completion`" in guide
+assert "`security-hardening`" in guide
 homes_git = (skills / "homes-git" / "SKILL.md").read_text()
-for required in (
-    "Checkout gate",
-    "~/workspace/homes/worktrees/<repo>/<name>/",
-    "NO TICKET",
-    "may share the same message",
-):
-    assert required in homes_git, f"missing homes-git requirement: {required}"
+assert "Checkout gate" not in homes_git
+assert "~/workspace/homes/worktrees/<repo>/<name>/" in homes_git
 
-cursor_hooks = json.loads((home / ".cursor" / "hooks.json").read_text())
+config = json.loads((cursor / "hooks.json").read_text())
+hooks = config["hooks"]
+assert "beforeSubmitPrompt" not in hooks
+assert "stop" not in hooks
+assert not any("gate-edit.sh" in item.get("command", "") for item in hooks["preToolUse"])
 for event in ("preToolUse", "beforeShellExecution", "beforeMCPExecution", "beforeReadFile"):
-    definitions = cursor_hooks["hooks"][event]
-    assert definitions and all(item.get("failClosed") is True for item in definitions)
-assert any(
-    item.get("command") == "bash ./hooks/strip-cursor-attribution.sh"
-    and item.get("matcher") == "Shell"
-    for item in cursor_hooks["hooks"]["preToolUse"]
-)
-assert cursor_hooks["hooks"]["stop"][0]["command"].endswith("cursor lock")
-
-def run(product: str, event: str, payload: object, raw: bool = False):
-    value = payload if raw else json.dumps(payload)
-    return subprocess.run(
-        [sys.executable, str(gate), product, event],
-        input=value,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-
-def cursor_permission(event: str, payload: object, raw: bool = False) -> str:
-    result = run("cursor", event, payload, raw=raw)
-    assert result.returncode == 0, result.stderr
-    return json.loads(result.stdout)["permission"]
-
-session = f"check-{os.getpid()}"
-digest = hashlib.sha256(f"cursor:{session}".encode()).hexdigest()
-state = Path(os.environ.get("XDG_STATE_HOME", home / ".local" / "state")) / "ai-standards" / f"{digest}.json"
-
-try:
-    run("cursor", "prompt", {"prompt": "implement it", "conversation_id": session, "generation_id": "g1"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g1"}) == "deny"
-
-    run("cursor", "prompt", {"prompt": "please gooo", "conversation_id": session, "generation_id": "g2"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g2"}) == "deny"
-
-    run("cursor", "prompt", {"prompt": "gooo please", "conversation_id": session, "generation_id": "g2b"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g2b"}) == "deny"
-
-    run("cursor", "prompt", {"prompt": "GoOo", "conversation_id": session, "generation_id": "g3"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g3"}) == "allow"
-    run("cursor", "lock", {"conversation_id": session, "generation_id": "g3"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g3"}) == "deny"
-
-    run(
-        "cursor",
-        "prompt",
-        {
-            "prompt": "MAIN\nNO TICKET\ngooo",
-            "conversation_id": session,
-            "generation_id": "g3b",
-        },
-    )
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g3b"}) == "allow"
-    run("cursor", "lock", {"conversation_id": session, "generation_id": "g3b"})
-
-    run("cursor", "prompt", {"prompt": "new request", "conversation_id": session, "generation_id": "g4"})
-    assert cursor_permission("edit", {"tool_name": "Write", "conversation_id": session, "generation_id": "g4"}) == "deny"
-
-    assert cursor_permission("shell", {"command": "git status"}) == "allow"
-    assert cursor_permission("shell", {"command": "bkt pr view 42 --json"}) == "allow"
-    assert cursor_permission("shell", {"command": "bkt pr diff 42"}) == "allow"
-    assert cursor_permission("shell", {"command": "bkt pr comment 42 --text hi --file a.ts --to-line 1"}) == "deny"
-    assert cursor_permission("shell", {"command": "git branch feature"}) == "deny"
-    assert cursor_permission("shell", {"command": "python3 script.py"}) == "deny"
-    assert cursor_permission("mcp", {"tool_name": "get_input_schema"}) == "allow"
-    assert cursor_permission("mcp", {"tool_name": "update_issue"}) == "deny"
-    assert cursor_permission("edit", "{", raw=True) == "deny"
-finally:
-    state.unlink(missing_ok=True)
-
-for product in ("claude", "codex"):
-    product_session = f"{session}-{product}"
-    product_digest = hashlib.sha256(f"{product}:{product_session}".encode()).hexdigest()
-    product_state = (
-        Path(os.environ.get("XDG_STATE_HOME", home / ".local" / "state"))
-        / "ai-standards"
-        / f"{product_digest}.json"
-    )
-    try:
-        run(product, "prompt", {"prompt": "implement it", "session_id": product_session})
-        assert run(product, "tool", {"tool_name": "Write", "session_id": product_session}).returncode == 2
-        run(product, "prompt", {"prompt": "gooo", "session_id": product_session})
-        assert run(product, "tool", {"tool_name": "Write", "session_id": product_session}).returncode == 0
-        run(product, "lock", {"session_id": product_session})
-        assert run(product, "tool", {"tool_name": "Write", "session_id": product_session}).returncode == 2
-        run(product, "prompt", {"prompt": "next task", "session_id": product_session})
-        assert run(product, "tool", {"tool_name": "Write", "session_id": product_session}).returncode == 2
-    finally:
-        product_state.unlink(missing_ok=True)
+    assert hooks[event] and all(item.get("failClosed") is True for item in hooks[event])
+assert hooks["beforeShellExecution"][0]["command"] == "./hooks/gate-shell.sh"
+assert hooks["beforeMCPExecution"][0]["command"] == "./hooks/gate-mcp.sh"
+assert hooks["beforeReadFile"][0]["command"] == "./hooks/gate-read.sh"
+assert any("strip-cursor-attribution.sh" in item["command"] for item in hooks["preToolUse"])
 
 injected = subprocess.check_output(
-    [str(home / ".cursor" / "hooks" / "inject-standards.sh")],
+    [str(cursor / "hooks" / "inject-standards.sh")],
     input="{}",
     text=True,
 )
 context = json.loads(injected)["additional_context"]
-assert "Rudra's agent standards" in context
-assert "gooo" in context
-assert "using-skill-guide" in context
+assert "Plan, then implement" in context
+assert "gooo" not in context
 
-for product, path in (
-    ("claude", home / ".claude" / "settings.json"),
-    ("codex", home / ".codex" / "hooks.json"),
-):
-    config = json.loads(path.read_text())
-    commands = {
-        handler.get("command")
-        for groups in config.get("hooks", {}).values()
-        for group in groups
-        if isinstance(group, dict)
-        for handler in group.get("hooks", [])
-        if isinstance(handler, dict)
-    }
-    assert f'python3 "$HOME/ai-standards/approval-gate.py" {product} prompt' in commands
-    assert f'python3 "$HOME/ai-standards/approval-gate.py" {product} tool' in commands
-    assert f'python3 "$HOME/ai-standards/approval-gate.py" {product} lock' in commands
+spec = importlib.util.spec_from_file_location("agent_hooks", standards / "install-agent-hooks.py")
+assert spec is not None and spec.loader is not None
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
 
-sanitizer_payload = {
-    "tool_name": "Shell",
-    "tool_input": {
-        "command": (
-            "git commit -m 'fix: example\n\n"
-            "Co-authored-by: Cursor <cursoragent@cursor.com>'"
-        ),
+with tempfile.TemporaryDirectory(prefix="agent-hooks-check-") as directory:
+    fixture = Path(directory) / "settings.json"
+    fixture.write_text(json.dumps({"hooks": {
+        "UserPromptSubmit": [{"hooks": [
+            {"command": module.command("claude", "prompt")},
+            {"command": "third-party prompt"},
+        ]}],
+        "PreToolUse": [
+            {"hooks": [{"command": module.command("claude", "tool")}]},
+            {"hooks": [{"command": "third-party tool"}]},
+        ],
+        "Stop": [{"hooks": [
+            {"command": module.command("claude", "lock")},
+            {"command": "third-party stop"},
+        ]}],
+    }}))
+    assert module.reconcile("claude", fixture)
+    assert not module.reconcile("claude", fixture)
+    kept = json.loads(fixture.read_text())["hooks"]
+    assert kept["UserPromptSubmit"][0]["hooks"] == [{"command": "third-party prompt"}]
+    assert kept["PreToolUse"] == [{"hooks": [{"command": "third-party tool"}]}]
+    assert kept["Stop"][0]["hooks"] == [{"command": "third-party stop"}]
+
+for product in ("claude", "codex"):
+    live = json.loads((home / f".{product}" / ("settings.json" if product == "claude" else "hooks.json")).read_text())
+    content = json.dumps(live)
+    for event in ("prompt", "tool", "lock"):
+        assert module.command(product, event) not in content, f"legacy {product} gate remains"
+
+def hook_decision(name: str, payload: str) -> str:
+    result = subprocess.run(
+        [str(cursor / "hooks" / name)],
+        input=payload,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)["permission"]
+
+def shell(command: str) -> str:
+    return hook_decision("gate-shell.sh", json.dumps({"command": command}))
+
+assert shell("touch local.txt") == "allow"
+assert shell("git reset --hard") == "deny"
+assert shell("rm -rf /") == "deny"
+assert shell("rm -rf docs/ripple") == "ask"
+assert shell("git commit -m change") == "ask"
+assert shell("git commit -m change --trailer Co-authored-by: Cursor <agent@cursor.com>") == "deny"
+assert shell("cat .env") == "ask"
+assert hook_decision("gate-shell.sh", "{") == "deny"
+assert hook_decision("gate-mcp.sh", json.dumps({"tool_name": "list_issues"})) == "allow"
+assert hook_decision("gate-mcp.sh", json.dumps({"tool_name": "update_issue"})) == "ask"
+assert hook_decision("gate-mcp.sh", "{") == "deny"
+assert hook_decision("gate-read.sh", json.dumps({"file_path": ".env"})) == "deny"
+assert hook_decision("gate-read.sh", json.dumps({"file_path": ".env.example"})) == "allow"
+
+sanitized = subprocess.check_output(
+    ["bash", str(cursor / "hooks" / "strip-cursor-attribution.sh")],
+    input=json.dumps({"tool_input": {
+        "command": "git commit -m change Co-authored-by: Cursor <cursoragent@cursor.com>",
         "working_directory": "/tmp/example",
-        "description": "Example command",
-    },
-}
-sanitized = json.loads(
-    subprocess.check_output(
-        ["bash", str(home / ".cursor" / "hooks" / "strip-cursor-attribution.sh")],
-        input=json.dumps(sanitizer_payload),
-        text=True,
-    )
-)
-assert sanitized["permission"] == "allow"
-assert "cursoragent@cursor.com" not in sanitized["updated_input"]["command"]
-assert sanitized["updated_input"]["working_directory"] == "/tmp/example"
-assert sanitized["updated_input"]["description"] == "Example command"
-
-unchanged = json.loads(
-    subprocess.check_output(
-        ["bash", str(home / ".cursor" / "hooks" / "strip-cursor-attribution.sh")],
-        input=json.dumps(
-            {
-                "tool_name": "Shell",
-                "tool_input": {"command": "git status"},
-            }
-        ),
-        text=True,
-    )
-)
-assert unchanged == {"permission": "allow"}
-
-shell_payload = {
-    "command": "git commit -m x --trailer Co-authored-by: Cursor <agent@cursor.com>",
-    "conversation_id": session,
-    "generation_id": "g5",
-}
-run("cursor", "prompt", {"prompt": "gooo", "conversation_id": session, "generation_id": "g5"})
-shell = subprocess.check_output(
-    [str(home / ".cursor" / "hooks" / "gate-shell.sh")],
-    input=json.dumps(shell_payload),
+    }}),
     text=True,
 )
-assert '"deny"' in shell
-state.unlink(missing_ok=True)
+updated = json.loads(sanitized)["updated_input"]
+assert "cursoragent@cursor.com" not in updated["command"]
+assert updated["working_directory"] == "/tmp/example"
 
 print("OK")
 PY
+
+node --experimental-strip-types --test "$H/ai-standards/pi-approval.test.mjs"

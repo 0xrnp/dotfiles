@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge personal approval hooks without replacing third-party configuration."""
+"""Retire owned plan-gate hooks without changing third-party configuration."""
 
 from __future__ import annotations
 
@@ -27,43 +27,43 @@ def load_object(path: Path) -> dict[str, Any]:
     return value
 
 
-def add_hook(
+def remove_hook(
     config: dict[str, Any],
     event: str,
     hook_command: str,
 ) -> bool:
-    hooks = config.setdefault("hooks", {})
+    hooks = config.get("hooks", {})
     if not isinstance(hooks, dict):
         raise ValueError("hooks must be a JSON object")
-    groups = hooks.setdefault(event, [])
+    groups = hooks.get(event, [])
     if not isinstance(groups, list):
         raise ValueError(f"hooks.{event} must be a JSON array")
-
+    changed = False
+    retained_groups = []
     for group in groups:
         if not isinstance(group, dict):
+            retained_groups.append(group)
             continue
         handlers = group.get("hooks")
         if not isinstance(handlers, list):
+            retained_groups.append(group)
             continue
-        if any(
-            isinstance(handler, dict)
-            and handler.get("command") == hook_command
-            for handler in handlers
-        ):
-            return False
-
-    groups.append(
-        {
-            "hooks": [
-                {
-                    "type": "command",
-                    "command": hook_command,
-                    "timeout": 5,
-                }
-            ]
-        }
-    )
-    return True
+        retained = [
+            handler for handler in handlers
+            if not (isinstance(handler, dict) and handler.get("command") == hook_command)
+        ]
+        if len(retained) != len(handlers):
+            changed = True
+            if retained:
+                retained_groups.append({**group, "hooks": retained})
+        else:
+            retained_groups.append(group)
+    if changed:
+        if retained_groups:
+            hooks[event] = retained_groups
+        else:
+            hooks.pop(event, None)
+    return changed
 
 
 def write_atomic(path: Path, config: dict[str, Any]) -> None:
@@ -82,12 +82,12 @@ def write_atomic(path: Path, config: dict[str, Any]) -> None:
     os.replace(temporary, path)
 
 
-def install(product: str, path: Path) -> bool:
+def reconcile(product: str, path: Path) -> bool:
     config = load_object(path)
     changed = False
-    changed |= add_hook(config, "UserPromptSubmit", command(product, "prompt"))
-    changed |= add_hook(config, "PreToolUse", command(product, "tool"))
-    changed |= add_hook(config, "Stop", command(product, "lock"))
+    changed |= remove_hook(config, "UserPromptSubmit", command(product, "prompt"))
+    changed |= remove_hook(config, "PreToolUse", command(product, "tool"))
+    changed |= remove_hook(config, "Stop", command(product, "lock"))
     if changed:
         write_atomic(path, config)
     return changed
@@ -99,7 +99,7 @@ def main() -> None:
         "codex": HOME / ".codex" / "hooks.json",
     }
     for product, path in targets.items():
-        status = "updated" if install(product, path) else "already configured"
+        status = "removed owned gate hooks" if reconcile(product, path) else "no owned gate hooks"
         print(f"{product}: {status}")
 
 

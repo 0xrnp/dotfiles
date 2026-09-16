@@ -10,18 +10,21 @@ Personal skill. Do not create Linear tickets. Do not commit or push unless Rudra
 
 Homes git lives under `~/workspace/homes/**` (api, web, three Flutter apps, shared packages, lambdas).
 
-The global **Checkout gate** (`WORKTREE` / `MAIN`) lives in `~/ai-standards/AGENTS.md`. Obey that for every implement task. This skill only adds Homes ticket rules and the Homes worktree path when `WORKTREE` is chosen.
+Use the checkout Rudra or the host supplied. The global checkout-placement rules
+live in `~/ai-standards/AGENTS.md`. This skill adds Homes ticket, branch, and
+worktree-path rules.
 
 ## Ticket
 
 - If Rudra gives an ID (`EREV-831`, `INS-10`, …), use it in the branch name.
 - Before **branch / commit / PR** on a Homes repo: ask once for a ticket ID. Wait if they skip.
-- When there is no ticket, commits carry no marker — never write `NO TICKET`.
-- File edits in an already-approved plan may proceed without a ticket.
+- When there is no ticket, commits carry no marker. Never write `NO TICKET`.
+- File edits within the requested scope may proceed without a ticket.
 - Never create a Linear issue yourself. Linear MCP: only after it is authenticated; otherwise the ticket ID comes from chat.
 - Comment/update Linear only when Rudra asks.
 
-For a new Homes implement task you typically need both the global checkout answer (`WORKTREE` or `MAIN`) and a ticket answer (ID or `NO TICKET`) before mutating, unless an AGENTS.md checkout skip condition already applies.
+Ask for a ticket ID before creating a branch, commit, or PR. A user who says
+there is no ticket may proceed without one; no control token is required.
 
 ## Branch
 
@@ -31,16 +34,18 @@ For a new Homes implement task you typically need both the global checkout answe
 
 ## Worktrees (Homes paths)
 
-When Rudra answered `WORKTREE` on a Homes repo, use
+When Rudra asks for a new worktree on a Homes repo, use
 `~/workspace/homes/worktrees/<repo>/<name>/` (example: `homes-api-app/topaz-plover`), not the generic `~/workspace/worktrees/...` path.
 
-Prefer API / Angular for `WORKTREE`. Flutter worktrees are expensive (`pub get`, `build_runner`, CocoaPods); still obey the AGENTS.md gate, and prefer `MAIN` for Flutter unless the tree is dirty or Rudra chooses `WORKTREE`.
+Flutter worktrees are expensive (`pub get`, `build_runner`, CocoaPods). Use the
+open checkout unless Rudra or the host supplied a worktree, or isolation is
+needed for concurrent work.
 
 **When not**
 
 - Nested worktree. Worktree into prod/staging checkouts. Worktree because a question was asked.
 - Cursor isolated/best-of-n runs already create worktrees. Do not nest another inside those.
-- Rudra answered `MAIN`.
+- Rudra asked to edit the main checkout.
 
 **How**
 

@@ -10,7 +10,7 @@ live_config_reload = true
 # ==============================================================================
 [window]
 startup_mode = "Windowed"
-opacity = 1
+opacity = 0.8
 blur = true
 decorations = "buttonless"
 padding = { x = 10, y = 10 }
@@ -21,21 +21,25 @@ dynamic_title = true
 # FONT (Matched to Ghostty settings)
 # ==============================================================================
 [font]
-size = 12.5
+size = 13
 builtin_box_drawing = true
 offset = { x = 1, y = 3 }
 
 [font.normal]
-family = "JetBrainsMono Nerd Font Mono"
-style = "Medium"
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font Mono"
+family = "JetBrainsMono Nerd Font"
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font Mono"
+family = "JetBrainsMono Nerd Font"
 style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Bold Italic"
 
 # ==============================================================================
 # SCROLLING & PERFORMANCE
