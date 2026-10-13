@@ -29,8 +29,8 @@ repository code remain authoritative.
 | Python, `.py`, `pyproject.toml`, FastAPI, or Pydantic | `python-engineering` |
 | Terraform, HCL, state, providers, or modules | `terraform-engineering` |
 | Dart or Flutter outside Homes | `dart-flutter-engineering` |
-| JavaScript or TypeScript | `js-ts-engineering`; add `homes-js-ts` in Homes |
-| React Native or Expo | `react-native` and `js-ts-engineering` |
+| JavaScript or TypeScript | `js-ts-engineering`; add `homes-js-ts` in Homes API, web, or lambdas |
+| React Native or Expo | `react-native`, `meta-react-native`, `vercel-react-native`, and `js-ts-engineering` |
 | Homes Dart/Flutter apps and packages | `homes-flutter` and `homes-git` |
 | Homes API, Angular, or Node lambdas | `homes-js-ts` and `homes-git` |
 | Branch, worktree, or ticket in Homes | `homes-git` |

@@ -1,10 +1,13 @@
 ---
 name: homes-js-ts
-description: TypeScript/JavaScript conventions for ASBL Homes API (Node) and Angular web app. Use when editing homes-api-app, homes-web-app, lambdas, or any Homes JS/TS.
-paths: "**/*.{ts,tsx,js,jsx},**/package.json,**/angular.json"
+description: TypeScript/JavaScript conventions for ASBL Homes API (Node), Angular web app, and Node lambdas. Use when editing homes-api-app, homes-web-app, or Homes lambdas. Not for the homes-ecosystem React Native app; use react-native there.
+paths: "**/*.{ts,js},**/package.json,**/angular.json"
 ---
 
 # Homes JS/TS
+
+If this is `homes-ecosystem` (Expo / React Native), this skill does not apply.
+Use `react-native` and `js-ts-engineering` with that repo's `.cursor/rules/`.
 
 Also read `js-ts-engineering` for shared language and runtime guidance. Repository
 instructions and the Homes conventions below take precedence for architecture,

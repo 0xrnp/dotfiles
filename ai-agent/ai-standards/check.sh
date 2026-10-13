@@ -41,6 +41,7 @@ required_skills = {
     "homes-git",
     "homes-js-ts",
     "js-ts-engineering",
+    "meta-react-native",
     "mongo-aggregations",
     "pr-authoring",
     "pr-review",
@@ -57,6 +58,7 @@ required_skills = {
     "terraform-engineering",
     "unslop",
     "using-skill-guide",
+    "vercel-react-native",
     "verification-before-completion",
 }
 
