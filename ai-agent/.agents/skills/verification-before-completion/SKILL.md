@@ -32,6 +32,14 @@ For bug fixes, verify the regression fails on the prior behavior when practical.
 Use a focused fixture or reproduction if there is no suitable test harness;
 explain the remaining gap instead of claiming compilation proves correctness.
 
+## Automated stop check
+
+A personal stop hook runs the repository's existing lint, typecheck, or
+analyzer for files changed during the turn. It does not run tests and does not
+prove behavior, so passing it is not verification. When it reports a failure,
+fix what the change caused, or report a pre-existing failure as a residual
+risk. Never loosen configuration or add ignore comments to silence it.
+
 ## Red flags
 
 - "Should work" without a command or reproduction.

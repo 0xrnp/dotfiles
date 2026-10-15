@@ -43,7 +43,8 @@ repository code remain authoritative.
 | Tests fail, builds break, or behavior is wrong | `systematic-debugging` |
 | About to claim done on non-trivial code | `verification-before-completion` then `self-review` |
 | Auth, input, tenancy, payments, or external trust boundaries | `security-hardening` |
-| Before finishing non-trivial or multi-file code | `self-review` |
+| Before finishing non-trivial or multi-file code | `self-review`, including its independent pass for multi-file or high-risk diffs |
+| A stop hook reports failed checks or asks for review | `verification-before-completion` and `self-review` |
 | A repository has a narrower matching skill | That project skill |
 
 Read multiple skills only when the task genuinely crosses concerns. A new
@@ -52,6 +53,8 @@ language skill. A one-line rename does not.
 
 ## Rules
 
+- Load a skill through the host's skill tool when it has one; otherwise read
+  the file. Load it before writing code, not after.
 - Read the current file. Do not recall an older version.
 - Do not announce skill loading unless it changes a decision.
 - Skills guide work. They do not authorize edits or external writes.

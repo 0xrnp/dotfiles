@@ -16,6 +16,7 @@ intended for the whole team.
 | `~/.claude/skills/` | Native discovery links to the owned shared skills |
 | `~/.cursor/hooks.json` | Cursor enforcement and context injection |
 | `~/.claude/CLAUDE.md` | Claude import and skill routing |
+| `~/ai-standards/verify-turn.py` | Stop hook that runs existing static checks on files changed in a turn |
 | `~/.codex/AGENTS.md` | Codex pointer to the canonical policy |
 
 Repository instructions override personal skills for architecture, commands,
@@ -33,8 +34,9 @@ and `jq`, then run:
 The bootstrap:
 
 1. Restows `ai-agent` and `codex`.
-2. Removes only the legacy personal plan-gate hooks from Claude and Codex
-   without replacing Orca, Superset, Herdr, marketplace, or local settings.
+2. Removes only the legacy personal plan-gate hooks from Claude and Codex and
+   appends the `verify-turn.py` session-start and stop hooks, without replacing
+   Orca, Superset, Herdr, marketplace, or local settings.
 3. Links owned skills into Claude's native skill directory. Existing
    unrelated skills are preserved; a conflicting name stops installation.
 4. Runs the complete configuration check.
@@ -109,6 +111,30 @@ remote workers, or Tab. Cursor ACP in Zed does not need a bound
 Claude and Codex use their own sandbox and approval controls. The installer
 removes only the old personal prompt/tool/stop gate commands from their live
 settings. It leaves third-party hooks untouched.
+
+## Quality gate
+
+`verify-turn.py` runs in Claude, Codex, and Cursor. At session start it records
+the working-tree state of the current repository. At each stop it finds files
+that changed during the turn and runs only the repository's existing checks for
+those languages: a `typecheck` and a `lint:check` or `lint` package script,
+`ruff check --no-fix`, `go vet`, `cargo clippy` (or `cargo check`), and
+`flutter analyze --no-pub` or `dart analyze`. Package scripts that fix or
+write files are skipped. Missing tools or dependencies are reported, not
+installed.
+
+A failure keeps the agent working once with the command output. A turn that
+changed three or more code files gets one request for targeted tests,
+`self-review`, and its independent review by a fresh subagent. The review
+brief lives in `self-review/references/` so every host can use it; this
+package holds only what all agents share, not host-specific agent folders. A
+continued stop never blocks
+again, and any hook error lets the agent finish.
+
+Limits: it checks only the repository at the session's working directory, does
+not run tests, and runs only under `~/workspace` and `~/dotfiles` because hooks
+execute repository scripts without a permission prompt. Edit `TRUSTED_ROOTS` to
+change that. Codex may ask you to trust the new hooks after installation.
 
 These hooks are best-effort checks, not a security boundary. Shell aliases,
 scripts, interpreters, unusual option forms, and tools with misleading names

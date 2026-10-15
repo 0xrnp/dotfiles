@@ -22,8 +22,9 @@ Rewrite so it sounds like a person. Keep meaning. Drop the costume.
 - Em dashes. Prefer a sentence, comma, colon, or parentheses
 - Synonym cycling (three names for the same thing). Pick one word
 - Generic closer: "The future looks bright." End on the fact or the next step
-- Comments that narrate syntax. Keep only decisions, invariants, constraints,
-  and non-obvious trade-offs
+- Comments that narrate syntax, restate names, or appear on every block. Keep
+  only decisions, invariants, constraints, non-obvious trade-offs, and short
+  section labels when a function does several jobs
 
 ## Keep
 

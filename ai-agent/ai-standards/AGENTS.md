@@ -233,9 +233,28 @@ idempotency, concurrency, and partial failure when relevant.
 Write straightforward code that matches neighboring code. Clear code is better
 than fewer lines or a clever pattern.
 
-Comments explain why a decision exists, an invariant, a non-obvious constraint,
-or a surprising trade-off. Do not narrate syntax. Keep comments accurate when
-behavior changes.
+Comments are rare and earned. Prefer clearer names and structure over a
+comment. Write a comment only when a competent reader of the surrounding code
+would still miss something important.
+
+Write a comment when:
+- The why is not obvious from names and control flow (invariant, constraint,
+  workaround, ordering, security, compatibility, or surprising trade-off).
+- A place is not self-explanatory and renaming alone would not fix that.
+- A function or block does several distinct jobs and a short label for each
+  non-obvious section prevents misreading; prefer splitting the function when
+  that is smaller and clearer than commenting it.
+
+Do not write:
+- Restatements of what the next line does ("increment i", "return the result").
+- Noise on every function, parameter, or trivial branch.
+- Speculative TODOs, changelog narration, or comments that duplicate a type or
+  test name.
+- Comments that apologize for bad code instead of fixing the local smell when
+  that fix is in scope.
+
+Keep comments accurate when behavior changes. Delete stale or obvious ones in
+the same edit.
 
 Do not use em dashes in generated prose, comments, documentation, commit
 messages, or PR text. Use a sentence, comma, colon, or parentheses.
@@ -273,8 +292,15 @@ For non-trivial work:
    accidental behavior changes.
 2. Run the narrowest meaningful verification, then broaden it in proportion to
    shared behavior and risk.
-3. Report changed files, why the change is minimal, checks actually run, and
+3. For multi-file or high-risk changes, get an independent review (a fresh
+   subagent with the `self-review` brief where the host supports one) and fix
+   confirmed findings within scope.
+4. Report changed files, why the change is minimal, checks actually run, and
    residual risks.
+
+Never loosen lint, type, or test configuration, or add ignore comments, to make
+a check pass. A stop hook runs existing static checks for files changed in the
+turn; treat its failures as yours unless they are pre-existing.
 
 Compilation alone does not prove behavior. Passing tests do not excuse a
 contract, security, data, or scope violation.

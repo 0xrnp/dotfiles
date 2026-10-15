@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Expose owned skills and retire legacy hooks without replacing integrations."""
+"""Expose owned skills and reconcile owned hooks without replacing integrations."""
 
 from __future__ import annotations
 
@@ -11,10 +11,41 @@ from typing import Any
 
 
 GATE = '$HOME/ai-standards/approval-gate.py'
+VERIFY = '$HOME/ai-standards/verify-turn.py'
+VERIFY_EVENTS = (("SessionStart", "start", 10), ("Stop", "stop", 480))
 
 
 def command(product: str, event: str) -> str:
     return f'python3 "{GATE}" {product} {event}'
+
+
+def verify_command(product: str, event: str) -> str:
+    return f'python3 "{VERIFY}" {product} {event}'
+
+
+def ensure_hook(
+    config: dict[str, Any],
+    event: str,
+    hook_command: str,
+    timeout: int,
+) -> bool:
+    hooks = config.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        raise ValueError("hooks must be a JSON object")
+    groups = hooks.setdefault(event, [])
+    if not isinstance(groups, list):
+        raise ValueError(f"hooks.{event} must be a JSON array")
+    for group in groups:
+        handlers = group.get("hooks") if isinstance(group, dict) else None
+        if isinstance(handlers, list) and any(
+            isinstance(handler, dict) and handler.get("command") == hook_command
+            for handler in handlers
+        ):
+            return False
+    # Append so existing group indexes, which Codex uses for hook trust state,
+    # stay stable.
+    groups.append({"hooks": [{"type": "command", "command": hook_command, "timeout": timeout}]})
+    return True
 
 
 def load_object(path: Path) -> dict[str, Any]:
@@ -87,6 +118,8 @@ def reconcile(product: str, path: Path) -> bool:
     changed |= remove_hook(config, "UserPromptSubmit", command(product, "prompt"))
     changed |= remove_hook(config, "PreToolUse", command(product, "tool"))
     changed |= remove_hook(config, "Stop", command(product, "lock"))
+    for event, verify_event, timeout in VERIFY_EVENTS:
+        changed |= ensure_hook(config, event, verify_command(product, verify_event), timeout)
     if changed:
         write_atomic(path, config)
     return changed
@@ -124,7 +157,7 @@ def main() -> None:
         "codex": user_home / ".codex" / "hooks.json",
     }
     for product, path in targets.items():
-        status = "removed owned gate hooks" if reconcile(product, path) else "no owned gate hooks"
+        status = "updated owned hooks" if reconcile(product, path) else "owned hooks current"
         print(f"{product}: {status}")
 
 

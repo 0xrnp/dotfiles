@@ -41,7 +41,37 @@ actual diff, not the intended change.
   details; principle names did not justify unnecessary interfaces or layers.
 - Transport, domain, and persistence types are separated only when their
   semantics differ.
-- Comments explain invariants or reasons, not syntax.
+- Comments are sparse: only why, invariants, constraints, or section labels in
+  oversized functions. No syntax narration or random noise.
+
+## Smells that block done
+
+Fix these in lines the change touched. Report them in untouched code.
+
+- Dead code: unused imports, variables, parameters, exports, unreachable
+  branches, commented-out code, or leftover debug logging.
+- A new helper or copied block that duplicates logic already in the repository.
+- Errors swallowed, broadened, or turned into fake success.
+- A boolean or mode parameter that switches between unrelated behaviors.
+- Nesting or length that an early return or one extraction clearly removes.
+- The same unexplained literal repeated where a named value exists or belongs.
+- Weakened types or checks: `any`, `dynamic`, `interface{}`, `unwrap()`, `!`,
+  casts, or ignore comments without a stated reason.
+- Generic names (`data`, `handle`, `util`, `temp`) where the domain has a word,
+  or names that no longer match behavior.
+- Tests that mirror the implementation, mock the unit under test, or skip the
+  failure case of new behavior.
+- Hand-edited generated files, or lint, type, or test configuration loosened
+  to make a check pass.
+
+## Independent pass
+
+Self-review shares the author's blind spots. For multi-file or high-risk diffs
+(auth, tenancy, payments, stored data, concurrency, public contracts), give
+[references/independent-review.md](references/independent-review.md) to a
+fresh subagent with the original request and diff scope. Without subagents,
+follow that brief yourself in a separate pass. Fix confirmed findings within
+scope and report the rest.
 
 ## Stack checks
 

@@ -10,6 +10,8 @@ test -x "$H/.cursor/hooks/gate-shell.sh"
 test -x "$H/.cursor/hooks/gate-mcp.sh"
 test -x "$H/.cursor/hooks/gate-read.sh"
 test -r "$H/.cursor/hooks/strip-cursor-attribution.sh"
+test -x "$H/.cursor/hooks/verify-turn.sh"
+test -x "$H/ai-standards/verify-turn.py"
 test -r "$H/.agents/skills/using-skill-guide/SKILL.md"
 command -v jq >/dev/null
 
@@ -125,7 +127,13 @@ assert "~/workspace/homes/worktrees/<repo>/<name>/" in homes_git
 config = json.loads((cursor / "hooks.json").read_text())
 hooks = config["hooks"]
 assert "beforeSubmitPrompt" not in hooks
-assert "stop" not in hooks
+assert [item["command"] for item in hooks["stop"]] == ["./hooks/verify-turn.sh stop"]
+assert hooks["stop"][0].get("loop_limit") == 1
+assert "./hooks/verify-turn.sh start" in [item["command"] for item in hooks["sessionStart"]]
+assert not any("orca" in json.dumps(items).lower() for items in hooks.values()), "third-party hook in tracked Cursor config"
+review_brief = skills / "self-review" / "references" / "independent-review.md"
+assert review_brief.is_file(), "self-review independent review brief is missing"
+assert "—" not in review_brief.read_text(), f"dash found: {review_brief}"
 assert not any("gate-edit.sh" in item.get("command", "") for item in hooks["preToolUse"])
 for event in ("preToolUse", "beforeShellExecution", "beforeMCPExecution", "beforeReadFile"):
     assert hooks[event] and all(item.get("failClosed") is True for item in hooks[event])
@@ -170,6 +178,9 @@ with tempfile.TemporaryDirectory(prefix="agent-hooks-check-") as directory:
     assert kept["UserPromptSubmit"][0]["hooks"] == [{"command": "third-party prompt"}]
     assert kept["PreToolUse"] == [{"hooks": [{"command": "third-party tool"}]}]
     assert kept["Stop"][0]["hooks"] == [{"command": "third-party stop"}]
+    for event, verify_event, _ in module.VERIFY_EVENTS:
+        handlers = [handler for group in kept[event] for handler in group["hooks"]]
+        assert handlers[-1]["command"] == module.verify_command("claude", verify_event)
 
     source = Path(directory) / "source"
     (source / "example").mkdir(parents=True)
@@ -194,6 +205,8 @@ for product in ("claude", "codex"):
     content = json.dumps(live)
     for event in ("prompt", "tool", "lock"):
         assert module.command(product, event) not in content, f"legacy {product} gate remains"
+    for event in ("start", "stop"):
+        assert module.verify_command(product, event) in content, f"{product} verify hook missing; run install-agent-hooks.py"
 
 def hook_decision(name: str, payload: str) -> str:
     result = subprocess.run(
@@ -239,3 +252,4 @@ print("OK")
 PY
 
 python3 -B "$H/ai-standards/hook-safety.test.py"
+python3 -B "$H/ai-standards/verify-turn.test.py"

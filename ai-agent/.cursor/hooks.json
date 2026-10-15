@@ -5,6 +5,10 @@
       {
         "command": "./hooks/inject-standards.sh",
         "timeout": 5
+      },
+      {
+        "command": "./hooks/verify-turn.sh start",
+        "timeout": 10
       }
     ],
     "preToolUse": [
@@ -34,6 +38,13 @@
         "command": "./hooks/gate-read.sh",
         "failClosed": true,
         "timeout": 5
+      }
+    ],
+    "stop": [
+      {
+        "command": "./hooks/verify-turn.sh stop",
+        "timeout": 480,
+        "loop_limit": 1
       }
     ]
   }
