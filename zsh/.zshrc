@@ -163,3 +163,6 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 # AWS Profile
 export AWS_PROFILE=homes-developer-737866084260
+
+# Homes workspace: new app, backend and old app in one Zed window
+alias homes-ws="zed ~/workspace/homes-ecosystem ~/workspace/homes/homes-api-app ~/workspace/homes/resident-mobile-app"
