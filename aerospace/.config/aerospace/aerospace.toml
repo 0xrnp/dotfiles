@@ -303,14 +303,6 @@ alt-shift-l = ['join-with right', 'mode main']
 # Open Ghostty
 # alt-shift-g = 'exec-and-forget open -n /Applications/Ghostty.app'
 
-# [[on-window-detected]]
-# if.workspace = 'P'
-# run = ['layout floating']
-
-# [[on-window-detected]]
-# if.workspace = '6'
-# run = ['layout floating']
-
 [[on-window-detected]]
 if.app-name-regex-substring = 'alacritty'
 run = 'move-node-to-workspace 0'
@@ -378,3 +370,7 @@ run = 'move-node-to-workspace 9'
 [[on-window-detected]]
 if.app-id = 'com.apple.reminders'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'outlook'
+run = 'move-node-to-workspace X'
