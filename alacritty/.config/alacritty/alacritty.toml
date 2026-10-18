@@ -10,8 +10,8 @@ live_config_reload = true
 # ==============================================================================
 [window]
 startup_mode = "Windowed"
-opacity = 0.8
-blur = true
+opacity = 1
+blur = false
 decorations = "buttonless"
 padding = { x = 10, y = 10 }
 dynamic_padding = true
@@ -25,20 +25,36 @@ size = 13
 builtin_box_drawing = true
 offset = { x = 1, y = 3 }
 
+# [font.normal]
+# family = "JetBrainsMono Nerd Font"
+# style = "Regular"
+#
+# [font.bold]
+# family = "JetBrainsMono Nerd Font"
+# style = "Bold"
+#
+# [font.italic]
+# family = "JetBrainsMono Nerd Font"
+# style = "Italic"
+#
+# [font.bold_italic]
+# family = "JetBrainsMono Nerd Font"
+# style = "Bold Italic"
+
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+family = "Maple Mono NF"
 style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"
+family = "Maple Mono NF"
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"
+family = "Maple Mono NF"
 style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"
+family = "Maple Mono NF"
 style = "Bold Italic"
 
 # ==============================================================================
