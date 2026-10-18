@@ -7,6 +7,19 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "mermaid_font_family": "Maple Mono NF",
+  "agent_buffer_font_family": "Maple Mono NF",
+  "agent_ui_font_family": "Maple Mono NF",
+  "cli_default_open_behavior": "existing_window",
+  "colorize_brackets": true,
+  "markdown_preview": {
+    "font_family": "Maple Mono NF",
+    "max_width": 1000.0,
+    "open_markdown_files_in_preview": false,
+  },
+  "cursor_animation": {
+    "enabled": true,
+  },
   "fullscreen_mode": "native",
   "format_on_save": "on",
   "lsp": {
@@ -49,20 +62,30 @@
     "custom": 2.0,
   },
   "agent_servers": {
-    "codex-acp": {
+    "antigravity-acp": {
+      "type": "registry"
+    },
+    "claude-acp": {
       "default_config_options": {
-        "model": "gpt-5.6-sol",
-        "reasoning_effort": "high"
+        "model": "sonnet",
+        "effort": "high"
       },
       "type": "registry"
     },
     "cursor": {
       "default_config_options": {
-        "reasoning": "medium",
-        "effort": "xhigh",
-        "model": "default"
+        "mode": "agent",
+        "model": "grok-4.7",
       },
-      "type": "registry"
+      "type": "registry",
+    },
+    "codex-acp": {
+      "default_config_options": {
+        "mode": "agent",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+      },
+      "type": "registry",
     },
   },
   "buffer_font_weight": 500.0,
@@ -81,11 +104,13 @@
     "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-sonnet-4-6",
+      "model": "claude-sonnet-5",
       "enable_thinking": true,
       "effort": "high",
     },
-    "sidebar_side": "right",
+    "threads_sidebar": {
+      "position": "right",
+    },
     "dock": "right",
     "favorite_models": [
       {
@@ -135,7 +160,7 @@
   "icon_theme": {
     "mode": "light",
     "light": "Soft Charmed Icons",
-    "dark": "Soft Charmed Icons"
+    "dark": "Soft Charmed Icons",
   },
   "autosave": {
     "after_delay": {
@@ -147,12 +172,12 @@
   "agent_ui_font_size": 13.0,
   "ui_font_weight": 500.0,
   "ui_font_family": "Fira Code",
-  "buffer_font_family": "JetBrains Mono",
+  "buffer_font_family": "Maple Mono NF",
   "ui_font_size": 14.0,
   "buffer_font_size": 13.0,
   "theme": {
     "mode": "dark",
     "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha (Blur) [Heavy]",
+    "dark": "Catppuccin Mocha",
   },
 }
