@@ -202,11 +202,17 @@ with tempfile.TemporaryDirectory(prefix="agent-hooks-check-") as directory:
 
 for product in ("claude", "codex"):
     live = json.loads((home / f".{product}" / ("settings.json" if product == "claude" else "hooks.json")).read_text())
-    content = json.dumps(live)
+    commands = [
+        handler["command"]
+        for groups in live.get("hooks", {}).values()
+        for group in groups
+        for handler in group.get("hooks", [])
+        if isinstance(handler, dict) and "command" in handler
+    ]
     for event in ("prompt", "tool", "lock"):
-        assert module.command(product, event) not in content, f"legacy {product} gate remains"
+        assert module.command(product, event) not in commands, f"legacy {product} gate remains"
     for event in ("start", "stop"):
-        assert module.verify_command(product, event) in content, f"{product} verify hook missing; run install-agent-hooks.py"
+        assert module.verify_command(product, event) in commands, f"{product} verify hook missing; run install-agent-hooks.py"
 
 def hook_decision(name: str, payload: str) -> str:
     result = subprocess.run(
