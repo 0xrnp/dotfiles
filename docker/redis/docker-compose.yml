@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redis:8.6.1
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - redis-net
+
+volumes:
+  redis-data:
+
+networks:
+  redis-net:
