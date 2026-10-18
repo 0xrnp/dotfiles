@@ -23,13 +23,17 @@ repository code remain authoritative.
 | New subsystem, cross-service flow, reliability, scale, or architecture | `system-design` |
 | Mongo aggregation or list/dashboard query | `mongo-aggregations` |
 | Rust, `.rs`, `Cargo.toml`, or toolchains | `rust-engineering` |
-| Go, `.go`, `go.mod`, `go.work`, or Go failures | `go-engineering` |
+| Go, `.go`, `go.mod`, `go.work`, or Go failures | `go-engineering`, plus the matching skill below |
+| Go goroutines, channels, mutexes, pools, or concurrent shutdown | `golang-concurrency` |
+| Go error creation, wrapping, checks, or error logging | `golang-error-handling` |
+| Go `context.Context`, cancel, or deadlines | `golang-context` |
+| Go tests | `golang-testing` |
 | Request/worker lifecycle, queues, retries, overload, or recovery | `service-reliability` |
 | CI, container builds, artifact promotion, rollout, or rollback | `delivery-engineering` |
 | Python, `.py`, `pyproject.toml`, FastAPI, or Pydantic | `python-engineering` |
 | Terraform, HCL, state, providers, or modules | `terraform-engineering` |
 | Dart or Flutter outside Homes | `dart-flutter-engineering` |
-| JavaScript or TypeScript | `js-ts-engineering`; add `homes-js-ts` in Homes API, web, or lambdas |
+| JavaScript or TypeScript | `js-ts-engineering` and `ts-correctness` when behavior, types, async work, or object merges change; add `homes-js-ts` in Homes API, web, or lambdas |
 | React Native or Expo | `react-native`, `meta-react-native`, `vercel-react-native`, and `js-ts-engineering` |
 | Homes Dart/Flutter apps and packages | `homes-flutter` and `homes-git` |
 | Homes API, Angular, or Node lambdas | `homes-js-ts` and `homes-git` |

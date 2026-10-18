@@ -61,3 +61,12 @@ checks, skipped platform/build-tag combinations, and remaining uncertainty.
 
 Effective Go is useful for idioms, but is not a complete guide to modern modules,
 generics, or toolchain behavior. Do not copy another language's architecture.
+
+## Narrower skills
+
+Read the one that matches the edit. The repository and this skill win if they disagree.
+
+- Goroutines, channels, mutexes, pools, shutdown: `golang-concurrency`
+- Creating, wrapping, checking, or logging errors: `golang-error-handling`
+- Context propagation, cancel, deadlines, values: `golang-context`
+- Tests: `golang-testing`

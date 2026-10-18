@@ -57,3 +57,6 @@ version. Do not upgrade packages or tooling incidentally.
 Run the repository's narrowest relevant type check, lint, test, and build.
 Broaden checks for shared types, public contracts, configuration, or generated
 artifacts. Report exactly what ran.
+
+When the edit changes behavior, types, async work, caught errors, validation,
+or object merges, also read `ts-correctness`. A one-line rename does not need it.

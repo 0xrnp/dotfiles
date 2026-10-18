@@ -39,6 +39,10 @@ required_skills = {
     "dart-flutter-engineering",
     "delivery-engineering",
     "go-engineering",
+    "golang-concurrency",
+    "golang-context",
+    "golang-error-handling",
+    "golang-testing",
     "homes-flutter",
     "homes-git",
     "homes-js-ts",
@@ -58,6 +62,7 @@ required_skills = {
     "system-design",
     "systematic-debugging",
     "terraform-engineering",
+    "ts-correctness",
     "unslop",
     "using-skill-guide",
     "vercel-react-native",
@@ -118,7 +123,16 @@ assert "Checkout gate" not in guide
 assert "`systematic-debugging`" in guide
 assert "`verification-before-completion`" in guide
 assert "`security-hardening`" in guide
-for name in ("go-engineering", "service-reliability", "delivery-engineering"):
+for name in (
+    "go-engineering",
+    "golang-concurrency",
+    "golang-context",
+    "golang-error-handling",
+    "golang-testing",
+    "ts-correctness",
+    "service-reliability",
+    "delivery-engineering",
+):
     assert f"`{name}`" in guide, f"missing skill route: {name}"
 homes_git = (skills / "homes-git" / "SKILL.md").read_text()
 assert "Checkout gate" not in homes_git

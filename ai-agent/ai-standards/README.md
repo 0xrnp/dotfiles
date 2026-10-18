@@ -60,8 +60,10 @@ Agents initially see skill names and short descriptions. They load a
 `SKILL.md` body only when the task matches. `using-skill-guide` routes by task,
 language, and repository without loading every skill.
 
-Primary language skills cover JavaScript/TypeScript, Dart/Flutter, Python,
-Terraform/HCL, Rust, and Go. Cross-cutting skills cover contracts, stored shape,
+Primary language skills cover JavaScript/TypeScript (`js-ts-engineering`,
+`ts-correctness`), Dart/Flutter, Python, Terraform/HCL, Rust, and Go
+(`go-engineering`, plus `golang-concurrency`, `golang-context`,
+`golang-error-handling`, and `golang-testing` for those failure modes). Cross-cutting skills cover contracts, stored shape,
 system design, impact analysis, MongoDB aggregation, prose, final review,
 systematic debugging, verification before completion, security hardening, and
 Bitbucket PR review (`pr-review`, `pr-review-and-comment`, `add-pr-comments`).
