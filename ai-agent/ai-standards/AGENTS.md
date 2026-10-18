@@ -271,6 +271,12 @@ Do not access production, live databases, deployment channels, payment systems,
 or secrets unless the user explicitly authorizes the named target for the
 current task. Authorization does not carry to later tasks.
 
+Nushell (`nu -c`) is optional, only for read-only inspection of structured
+data (JSON, YAML, CSV, logs, CLI JSON output) when `command -v nu` succeeds.
+Use `jq` or Python otherwise. Never use it in committed scripts, CI,
+Makefiles, or repository tooling, and treat `nu -c` as arbitrary command
+execution for permission purposes.
+
 Do not commit, amend, push, create a PR, publish, deploy, or create/update a
 ticket unless explicitly requested.
 
