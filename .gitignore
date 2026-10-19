@@ -64,11 +64,22 @@ tmux/.config/tmux/plugins/
 tmux/.config/tmux/tmux.conf.backup
 tmux/.config/tmux/tmux.conf.bak
 
+# Backups and local copies
+*.bak
+aerospace/.config/aerospace/aerospace-backup-*.toml
+tmux/.config/tmux/tmuxbackup.conf
+zed/.config/zed/settings_backup.json
+
+# JGit — machine-specific filesystem timing written by JetBrains
+jgit/.config/jgit/config
+
 # Herdr — runtime state (logs already covered by *.log)
 herdr/.config/herdr/session.json
 herdr/.config/herdr/release-notes.json
 herdr/.config/herdr/*.sock
+herdr/.config/herdr/*.sock.agent
 herdr/.config/herdr/sessions/
+herdr/.config/herdr/session-snapshots/
 
 # Raycast installed extensions and local runtime state
 raycast/.config/raycast/extensions/
