@@ -1,5 +1,14 @@
 return {
   {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        -- flutter-tools starts dartls and owns the closing-tag and widget-guide handlers.
+        dartls = { enabled = false },
+      },
+    },
+  },
+  {
     "akinsho/flutter-tools.nvim",
     lazy = false,
     dependencies = { "nvim-lua/plenary.nvim" },

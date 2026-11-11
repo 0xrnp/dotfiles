@@ -3,5 +3,3 @@
 -- Add any additional options here
 
 vim.g.lazyvim_picker = "fzf"
-vim.opt.splitright = true
-vim.opt.splitbelow = true

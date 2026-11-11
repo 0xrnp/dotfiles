@@ -1,9 +1,13 @@
 {
   "extras": [
-    "lazyvim.plugins.extras.coding.nvim-cmp",
+    "lazyvim.plugins.extras.ai.claudecode",
+    "lazyvim.plugins.extras.ai.sidekick",
+    "lazyvim.plugins.extras.coding.blink",
     "lazyvim.plugins.extras.coding.yanky",
     "lazyvim.plugins.extras.dap.core",
     "lazyvim.plugins.extras.editor.fzf",
+    "lazyvim.plugins.extras.formatting.prettier",
+    "lazyvim.plugins.extras.linting.eslint",
     "lazyvim.plugins.extras.lang.angular",
     "lazyvim.plugins.extras.lang.dart",
     "lazyvim.plugins.extras.lang.docker",
@@ -17,8 +21,8 @@
     "lazyvim.plugins.extras.lang.terraform",
     "lazyvim.plugins.extras.lang.toml",
     "lazyvim.plugins.extras.lang.typescript",
-    "lazyvim.plugins.extras.lang.typescript.tsgo",
     "lazyvim.plugins.extras.lang.yaml",
+    "lazyvim.plugins.extras.test.core",
     "lazyvim.plugins.extras.util.startuptime"
   ],
   "install_version": 8,
