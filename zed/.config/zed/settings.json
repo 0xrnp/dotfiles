@@ -7,10 +7,11 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "default_open_behavior": "new_window",
   "mermaid_font_family": "Maple Mono NF",
   "agent_buffer_font_family": "Maple Mono NF",
   "agent_ui_font_family": "Maple Mono NF",
-  "cli_default_open_behavior": "existing_window",
+  "cli_default_open_behavior": "new_window",
   "colorize_brackets": true,
   "markdown_preview": {
     "font_family": "Maple Mono NF",
@@ -62,12 +63,9 @@
     "custom": 2.0,
   },
   "agent_servers": {
-    "antigravity-acp": {
-      "type": "registry"
-    },
     "claude-acp": {
       "default_config_options": {
-        "model": "sonnet",
+        "model": "opus",
         "effort": "high"
       },
       "type": "registry"
@@ -76,14 +74,6 @@
       "default_config_options": {
         "mode": "agent",
         "model": "grok-4.7",
-      },
-      "type": "registry",
-    },
-    "codex-acp": {
-      "default_config_options": {
-        "mode": "agent",
-        "model": "gpt-5.6-sol",
-        "reasoning_effort": "high",
       },
       "type": "registry",
     },
@@ -99,6 +89,13 @@
     "dock": "left",
   },
   "agent": {
+    "tool_permissions": {
+      "tools": {
+        "fetch": {
+          "default": "allow"
+        }
+      }
+    },
     "play_sound_when_agent_done": "when_hidden",
     "thinking_display": "auto",
     "default_profile": "write",
