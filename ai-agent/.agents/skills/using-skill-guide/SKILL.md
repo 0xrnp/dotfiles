@@ -22,7 +22,9 @@ repository code remain authoritative.
 | API, DTO, event, CLI, module, or public type contract | `contract-design` |
 | New subsystem, cross-service flow, reliability, scale, or architecture | `system-design` |
 | Mongo aggregation or list/dashboard query | `mongo-aggregations` |
-| Rust, `.rs`, `Cargo.toml`, or toolchains | `rust-engineering` |
+| Rust, `.rs`, `Cargo.toml`, or toolchains | `rust-engineering`, then `rust-best-practices` |
+| Review or idiomatic cleanup of existing Rust | `rust-engineering`, `rust-review`, and `rust-best-practices` |
+| Port or rewrite C, C++, Python, Go, JavaScript, or TypeScript into Rust | `rust-engineering`, `rust-port`, and `rust-best-practices` |
 | Go, `.go`, `go.mod`, `go.work`, or Go failures | `go-engineering`, plus the matching skill below |
 | Go goroutines, channels, mutexes, pools, or concurrent shutdown | `golang-concurrency` |
 | Go error creation, wrapping, checks, or error logging | `golang-error-handling` |
@@ -53,7 +55,8 @@ repository code remain authoritative.
 
 Read multiple skills only when the task genuinely crosses concerns. A new
 persisted API field may need `schema-design`, `contract-design`, and one
-language skill. A one-line rename does not.
+language skill. A one-line rename does not. Rust loads both `rust-engineering`
+and `rust-best-practices` even for a small edit.
 
 ## Rules
 
@@ -63,6 +66,12 @@ language skill. A one-line rename does not.
 - Do not announce skill loading unless it changes a decision.
 - Skills guide work. They do not authorize edits or external writes.
 - Repo > skill > memory. Do not invent APIs or approaches.
+- For Rust, always read `rust-engineering` before `rust-best-practices`,
+  `rust-review`, or `rust-port`. Repository instructions and `rust-engineering`
+  own edition, MSRV, features, public APIs, and dependencies.
+  `rust-best-practices`, `rust-review`, and `rust-port` are the external
+  BeautifulRust skills. Load each one only when its `SKILL.md` is present under
+  `~/.agents/skills`.
 - If no skill fits, use `~/ai-standards/AGENTS.md` and repository evidence.
 - Use the checkout supplied by the user or host. For Homes-specific paths,
   branches, and ticket rules, read `homes-git`.

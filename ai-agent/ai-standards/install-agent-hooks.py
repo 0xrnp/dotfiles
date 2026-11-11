@@ -23,11 +23,16 @@ def verify_command(product: str, event: str) -> str:
     return f'python3 "{VERIFY}" {product} {event}'
 
 
+def rtk_command(product: str) -> str:
+    return f"rtk hook {product}"
+
+
 def ensure_hook(
     config: dict[str, Any],
     event: str,
     hook_command: str,
-    timeout: int,
+    timeout: int | None = None,
+    matcher: str | None = None,
 ) -> bool:
     hooks = config.setdefault("hooks", {})
     if not isinstance(hooks, dict):
@@ -44,7 +49,13 @@ def ensure_hook(
             return False
     # Append so existing group indexes, which Codex uses for hook trust state,
     # stay stable.
-    groups.append({"hooks": [{"type": "command", "command": hook_command, "timeout": timeout}]})
+    handler: dict[str, Any] = {"type": "command", "command": hook_command}
+    if timeout is not None:
+        handler["timeout"] = timeout
+    group: dict[str, Any] = {"hooks": [handler]}
+    if matcher is not None:
+        group["matcher"] = matcher
+    groups.append(group)
     return True
 
 
@@ -120,6 +131,7 @@ def reconcile(product: str, path: Path) -> bool:
     changed |= remove_hook(config, "Stop", command(product, "lock"))
     for event, verify_event, timeout in VERIFY_EVENTS:
         changed |= ensure_hook(config, event, verify_command(product, verify_event), timeout)
+    changed |= ensure_hook(config, "PreToolUse", rtk_command(product), matcher="Bash")
     if changed:
         write_atomic(path, config)
     return changed

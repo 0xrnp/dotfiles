@@ -10,3 +10,5 @@ Claude's own permissions and sandbox control tool execution. The personal
 installer removes the retired plan-token hooks and preserves other integrations.
 Present a scoped plan for non-trivial changes, then proceed within the request.
 Keep the canonical preview gates for commits, PRs, and review comments.
+
+@RTK.md

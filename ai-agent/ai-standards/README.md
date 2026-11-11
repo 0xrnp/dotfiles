@@ -14,8 +14,9 @@ intended for the whole team.
 | `~/ai-standards/AGENTS.md` | Concise universal engineering and workflow policy |
 | `~/.agents/skills/` | Portable, on-demand Agent Skills |
 | `~/.claude/skills/` | Native discovery links to the owned shared skills |
-| `~/.cursor/hooks.json` | Cursor enforcement and context injection |
+| `~/.cursor/hooks.json` | Cursor enforcement, RTK rewrite, and context injection |
 | `~/.claude/CLAUDE.md` | Claude import and skill routing |
+| `~/.claude/RTK.md` | Claude RTK awareness imported by `CLAUDE.md` |
 | `~/ai-standards/verify-turn.py` | Stop hook that runs existing static checks on files changed in a turn |
 | `~/.codex/AGENTS.md` | Codex pointer to the canonical policy |
 
@@ -35,8 +36,9 @@ The bootstrap:
 
 1. Restows `ai-agent` and `codex`.
 2. Removes only the legacy personal plan-gate hooks from Claude and Codex and
-   appends the `verify-turn.py` session-start and stop hooks, without replacing
-   Orca, Superset, Herdr, marketplace, or local settings.
+   appends the `verify-turn.py` session-start and stop hooks plus the RTK
+   rewrite hooks, without replacing Orca, Superset, Herdr, marketplace, or
+   local settings.
 3. Links owned skills into Claude's native skill directory. Existing
    unrelated skills are preserved; a conflicting name stops installation.
 4. Runs the complete configuration check.
@@ -52,7 +54,9 @@ remain explicit. The setup never commits configuration automatically.
 
 Claude and Codex settings are exceptions because integrations also modify those
 JSON files. `install-agent-hooks.py` removes only the old tracked gate commands
-idempotently. The full live settings files are not copied into this package.
+and ensures the verify-turn and RTK rewrite hooks. The full live settings files
+are not copied into this package. Cursor's RTK hook lives in the tracked
+`hooks.json` so `rtk init` does not replace that Stow symlink.
 
 ## Skills and context
 
@@ -92,6 +96,17 @@ package, for example [obra/superpowers](https://github.com/obra/superpowers),
 [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills), or
 [anthropics/skills](https://github.com/anthropics/skills) via each product's
 installer or `npx skills add …`.
+
+BeautifulRust is installed that way:
+
+```bash
+npx skills add morganlinton/BeautifulRust -g -a cursor -a claude-code -a codex -y
+```
+
+The copies are `~/.agents/skills/rust-best-practices`, `rust-review`, and
+`rust-port`, with Claude Code links beside the owned skills. Update just those
+three with `npx skills update -g rust-best-practices rust-review rust-port`.
+`using-skill-guide` loads them after `rust-engineering`.
 
 ## Enforcement limits
 

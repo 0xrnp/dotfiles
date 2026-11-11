@@ -132,8 +132,18 @@ for name in (
     "ts-correctness",
     "service-reliability",
     "delivery-engineering",
+    "rust-best-practices",
+    "rust-review",
+    "rust-port",
 ):
     assert f"`{name}`" in guide, f"missing skill route: {name}"
+for name in ("rust-best-practices", "rust-review", "rust-port"):
+    installed = skills / name
+    if installed.exists():
+        native = home / ".claude" / "skills" / name
+        assert native.resolve() == installed.resolve(), (
+            f"wrong or broken Claude link for {name}: {native}"
+        )
 homes_git = (skills / "homes-git" / "SKILL.md").read_text()
 assert "Checkout gate" not in homes_git
 assert "~/workspace/homes/worktrees/<repo>/<name>/" in homes_git
@@ -149,12 +159,25 @@ review_brief = skills / "self-review" / "references" / "independent-review.md"
 assert review_brief.is_file(), "self-review independent review brief is missing"
 assert "—" not in review_brief.read_text(), f"dash found: {review_brief}"
 assert not any("gate-edit.sh" in item.get("command", "") for item in hooks["preToolUse"])
-for event in ("preToolUse", "beforeShellExecution", "beforeMCPExecution", "beforeReadFile"):
+for event in ("beforeShellExecution", "beforeMCPExecution", "beforeReadFile"):
     assert hooks[event] and all(item.get("failClosed") is True for item in hooks[event])
 assert hooks["beforeShellExecution"][0]["command"] == "./hooks/gate-shell.sh"
 assert hooks["beforeMCPExecution"][0]["command"] == "./hooks/gate-mcp.sh"
 assert hooks["beforeReadFile"][0]["command"] == "./hooks/gate-read.sh"
 assert any("strip-cursor-attribution.sh" in item["command"] for item in hooks["preToolUse"])
+rtk_cursor = [item for item in hooks["preToolUse"] if item.get("command") == "rtk hook cursor"]
+assert rtk_cursor == [{"command": "rtk hook cursor", "matcher": "Shell"}]
+assert all(
+    item.get("failClosed") is True
+    for item in hooks["preToolUse"]
+    if item.get("command") != "rtk hook cursor"
+)
+claude_md = home / ".claude" / "CLAUDE.md"
+assert "@RTK.md" in claude_md.read_text()
+rtk_md = home / ".claude" / "RTK.md"
+package_rtk = standards.resolve().parent / ".claude" / "RTK.md"
+assert rtk_md.is_symlink() and rtk_md.resolve() == package_rtk.resolve()
+assert "\u2014" not in rtk_md.read_text() and "\u2013" not in rtk_md.read_text()
 
 injected = subprocess.check_output(
     [str(cursor / "hooks" / "inject-standards.sh")],
@@ -190,7 +213,11 @@ with tempfile.TemporaryDirectory(prefix="agent-hooks-check-") as directory:
     assert not module.reconcile("claude", fixture)
     kept = json.loads(fixture.read_text())["hooks"]
     assert kept["UserPromptSubmit"][0]["hooks"] == [{"command": "third-party prompt"}]
-    assert kept["PreToolUse"] == [{"hooks": [{"command": "third-party tool"}]}]
+    assert kept["PreToolUse"][0] == {"hooks": [{"command": "third-party tool"}]}
+    assert kept["PreToolUse"][1] == {
+        "matcher": "Bash",
+        "hooks": [{"type": "command", "command": module.rtk_command("claude")}],
+    }
     assert kept["Stop"][0]["hooks"] == [{"command": "third-party stop"}]
     for event, verify_event, _ in module.VERIFY_EVENTS:
         handlers = [handler for group in kept[event] for handler in group["hooks"]]
@@ -227,6 +254,7 @@ for product in ("claude", "codex"):
         assert module.command(product, event) not in commands, f"legacy {product} gate remains"
     for event in ("start", "stop"):
         assert module.verify_command(product, event) in commands, f"{product} verify hook missing; run install-agent-hooks.py"
+    assert module.rtk_command(product) in commands, f"{product} rtk hook missing; run install-agent-hooks.py"
 
 def hook_decision(name: str, payload: str) -> str:
     result = subprocess.run(

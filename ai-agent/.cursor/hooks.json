@@ -1,31 +1,5 @@
 {
-  "version": 1,
   "hooks": {
-    "sessionStart": [
-      {
-        "command": "./hooks/inject-standards.sh",
-        "timeout": 5
-      },
-      {
-        "command": "./hooks/verify-turn.sh start",
-        "timeout": 10
-      }
-    ],
-    "preToolUse": [
-      {
-        "command": "bash ./hooks/strip-cursor-attribution.sh",
-        "failClosed": true,
-        "timeout": 5,
-        "matcher": "Shell"
-      }
-    ],
-    "beforeShellExecution": [
-      {
-        "command": "./hooks/gate-shell.sh",
-        "failClosed": true,
-        "timeout": 5
-      }
-    ],
     "beforeMCPExecution": [
       {
         "command": "./hooks/gate-mcp.sh",
@@ -40,12 +14,45 @@
         "timeout": 5
       }
     ],
+    "beforeShellExecution": [
+      {
+        "command": "./hooks/gate-shell.sh",
+        "failClosed": true,
+        "timeout": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "bash ./hooks/strip-cursor-attribution.sh",
+        "failClosed": true,
+        "matcher": "Shell",
+        "timeout": 5
+      },
+      {
+        "command": "rtk hook cursor",
+        "matcher": "Shell"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "./hooks/inject-standards.sh",
+        "timeout": 5
+      },
+      {
+        "command": "./hooks/verify-turn.sh start",
+        "timeout": 10
+      },
+      {
+        "command": "bash '/Users/rudranarayan/.cursor/herdr-agent-state.sh' session"
+      }
+    ],
     "stop": [
       {
         "command": "./hooks/verify-turn.sh stop",
-        "timeout": 480,
-        "loop_limit": 1
+        "loop_limit": 1,
+        "timeout": 480
       }
     ]
-  }
+  },
+  "version": 1
 }
