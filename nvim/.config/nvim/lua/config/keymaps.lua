@@ -13,7 +13,7 @@ vim.keymap.set("v", "<", "<gv", { desc = "Indent left" })
 vim.keymap.set("v", ">", ">gv", { desc = "Indent right" })
 
 vim.keymap.set("n", "x", '"_x', { desc = "Delete character without copying" })
-vim.keymap.set("v", "p", '"_dP', { desc = "Paste without overwriting registry" })
+vim.keymap.set("x", "p", "P", { desc = "Paste without overwriting registry" })
 
 vim.keymap.set("n", "U", "<C-r>", { desc = "Redo" })
 
@@ -30,6 +30,36 @@ vim.keymap.set("n", "g9", "<cmd>BufferLineGoToBuffer 9<CR>", { desc = "Go to buf
 vim.keymap.set("n", "g0", "<cmd>BufferLineGoToBuffer 10<CR>", { desc = "Go to buffer 10" })
 vim.keymap.set("n", "<M-J>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer to the left" }) -- Alt+Shift+j grab to with you to left
 vim.keymap.set("n", "<M-K>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer to the right" }) -- Alt+Shift+k grab to with you to right
+
+-- ponytail: plain `git diff HEAD`, so untracked files only show once staged.
+vim.keymap.set("n", "<leader>gD", function()
+  local root = LazyVim.root.git()
+  local out = vim.fn.system({ "git", "-C", root, "diff", "--quiet", "HEAD" })
+  if vim.v.shell_error == 0 then
+    vim.notify("No changes against HEAD")
+    return
+  elseif vim.v.shell_error ~= 1 then
+    vim.notify(out, vim.log.levels.ERROR)
+    return
+  end
+  vim.cmd.tabnew()
+  local win = vim.api.nvim_get_current_win()
+  vim.bo.bufhidden = "wipe"
+  -- delta pages through less: n/N jump between files, q quits and closes the tab.
+  vim.fn.jobstart(
+    "git diff HEAD | delta --dark --syntax-theme='Catppuccin Mocha' --line-numbers --navigate --paging=always",
+    {
+      cwd = root,
+      term = true,
+      on_exit = function()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, true)
+        end
+      end,
+    }
+  )
+  vim.cmd.startinsert()
+end, { desc = "Review changes (single diff)" })
 
 vim.keymap.set("n", "<leader>un", function()
   Snacks.notifier.show_history()
