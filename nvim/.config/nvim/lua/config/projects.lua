@@ -67,6 +67,8 @@ local function in_dot_dir(path)
   return path:sub(#home + 2):find("^%.") ~= nil or path:sub(#home + 2):find("/%.") ~= nil
 end
 
+local lock_path = state_path .. ".lock"
+
 local function read_state()
   local state = {}
   local f = io.open(state_path, "r")
@@ -90,6 +92,37 @@ local function write_state(state)
   f:write(vim.json.encode(state))
   f:close()
   assert(vim.uv.fs_rename(tmp, state_path))
+end
+
+-- Read, change, and write the state while holding a lock, because Rex can start several
+-- Neovims at once. mkdir is atomic. A lock older than 5 s belongs to a crashed process.
+-- `fn` returns (changed, value). The state is written only when `changed` is true.
+local function with_state(fn)
+  local waited = 0
+  while not vim.uv.fs_mkdir(lock_path, 448) do
+    local stat = vim.uv.fs_stat(lock_path)
+    if stat and os.time() - stat.mtime.sec > 5 then
+      vim.uv.fs_rmdir(lock_path)
+    elseif waited >= 2000 then
+      error("projects: state file is locked", 0)
+    else
+      vim.wait(20)
+      waited = waited + 20
+    end
+  end
+  local ok, result = pcall(function()
+    local state = read_state()
+    local changed, value = fn(state)
+    if changed then
+      write_state(state)
+    end
+    return value
+  end)
+  vim.uv.fs_rmdir(lock_path)
+  if not ok then
+    error(result, 0)
+  end
+  return result
 end
 
 local function discover()
@@ -116,8 +149,9 @@ local function discover()
         "--exclude",
         ".terraform",
       }
+      -- Anchored to the root, so excluding ~/go does not hide ~/opensource/go.
       for _, name in ipairs(root.exclude or {}) do
-        vim.list_extend(cmd, { "--exclude", name })
+        vim.list_extend(cmd, { "--exclude", "/" .. name })
       end
       vim.list_extend(cmd, { "--format", "{//}", "^\\.git$", dir })
       jobs[#jobs + 1] = vim.system(cmd, { text = true })
@@ -178,26 +212,63 @@ local function record()
   if root == norm("~") or in_dot_dir(root) then
     return
   end
-  local state = read_state()
-  state.seen[root] = os.time()
-  write_state(state)
+  with_state(function(state)
+    state.seen[root] = os.time()
+    return true
+  end)
 end
 
--- Worktree folders are named after the branch, so keep the repo name for a readable tab.
+-- Tab name. The parent folder keeps same-named repos apart (homes/api vs workspace/api, and
+-- worktrees named after a branch), because focus_existing finds a tab by this name.
 local function label(path)
-  local name = vim.fs.basename(path)
-  if path:find("/worktrees/", 1, true) then
-    return vim.fs.basename(vim.fs.dirname(path)) .. "/" .. name
+  return vim.fs.basename(vim.fs.dirname(path)) .. "/" .. vim.fs.basename(path)
+end
+
+-- tmux expands #S, #W and similar in -c and -n, so a literal # must be doubled.
+local function tmux_literal(text)
+  return (text:gsub("#", "##"))
+end
+
+-- progpath can be a versioned Cellar path that disappears on `brew upgrade`, so prefer the
+-- stable one on PATH when it is the same binary.
+local function nvim_path()
+  local on_path = vim.fn.exepath("nvim")
+  if on_path ~= "" and vim.uv.fs_realpath(on_path) == vim.uv.fs_realpath(vim.v.progpath) then
+    return on_path
   end
-  return name
+  return vim.v.progpath
+end
+
+-- Focus the tab already showing `path` instead of opening a second one. Only tmux and Rex can
+-- list tabs. A renamed tab is not found, so a new one opens. Returns true when it focused one.
+local function focus_existing(path)
+  local name = label(path)
+  if vim.env.TMUX then
+    local out = vim.system({ "tmux", "list-windows", "-F", "#{window_id}\t#{window_name}" }, { text = true }):wait()
+    for _, line in ipairs(vim.split(out.stdout or "", "\n", { trimempty = true })) do
+      local id, window_name = line:match("^(.-)\t(.*)$")
+      if window_name == name then
+        return vim.system({ "tmux", "select-window", "-t", id }):wait().code == 0
+      end
+    end
+  elseif vim.env.REX_SESSION then
+    local out = vim.system({ "rex", "window", "ls", "-s", vim.env.REX_SESSION, "--json" }, { text = true }):wait()
+    local ok, data = pcall(vim.json.decode, out.stdout or "")
+    for _, window in ipairs(ok and type(data) == "table" and (data.windows or data) or {}) do
+      if window.label == name then
+        return vim.system({ "rex", "window", "focus", window.window_id, "-s", vim.env.REX_SESSION }):wait().code == 0
+      end
+    end
+  end
+  return false
 end
 
 -- Command that opens `nvim` in `path` in a new tab or window of the terminal running this
 -- Neovim. The innermost multiplexer wins. Returns nil for an unrecognised terminal.
 local function external_cmd(path)
-  local nvim = vim.v.progpath
+  local nvim = nvim_path()
   if vim.env.TMUX then
-    return { "tmux", "new-window", "-c", path, "-n", label(path), nvim }
+    return { "tmux", "new-window", "-c", tmux_literal(path), "-n", tmux_literal(label(path)), nvim }
   elseif vim.env.REX_SESSION then
     return { "rex", "window", "new", "-s", vim.env.REX_SESSION, label(path), "-c", path, "--", nvim }
   elseif vim.env.TERM_PROGRAM == "ghostty" then
@@ -232,6 +303,9 @@ function M.open(path)
     vim.notify("Unknown terminal, opening in this Neovim", vim.log.levels.WARN)
     return open_here(path)
   end
+  if focus_existing(path) then
+    return
+  end
   vim.system(cmd, { text = true, stdin = stdin }, function(res)
     if res.code ~= 0 then
       vim.schedule(function()
@@ -252,45 +326,51 @@ function M.add(path)
   if vim.fn.isdirectory(path) == 0 then
     return vim.notify(tilde(path) .. " is not a directory", vim.log.levels.ERROR)
   end
-  local state = read_state()
-  local hidden_before = #state.hidden
-  state.hidden = vim.tbl_filter(function(p)
-    return norm(p) ~= path
-  end, state.hidden)
-  local was_hidden = #state.hidden < hidden_before
-  if vim.tbl_contains(visible(), path) and not was_hidden then
-    return vim.notify(tilde(path) .. " is already listed")
-  end
-  if not vim.tbl_contains(candidates(state), path) then
-    table.insert(state.pinned, path)
-  end
-  write_state(state)
-  vim.notify("Added " .. tilde(path))
+  local scanned = discover()
+  local added = with_state(function(state)
+    local was_hidden = false
+    state.hidden = vim.tbl_filter(function(p)
+      if norm(p) == path then
+        was_hidden = true
+        return false
+      end
+      return true
+    end, state.hidden)
+    local known = vim.tbl_contains(scanned, path)
+      or state.seen[path] ~= nil
+      or vim.tbl_contains(vim.tbl_map(norm, state.pinned), path)
+    if known and not was_hidden then
+      return false, false
+    end
+    if not known then
+      table.insert(state.pinned, path)
+    end
+    return true, true
+  end)
+  vim.notify(added and ("Added " .. tilde(path)) or (tilde(path) .. " is already listed"))
 end
 
 -- Hand-added entries are dropped. Anything found by scan or history is hidden instead,
 -- because it would reappear otherwise.
 function M.remove(path)
   path = norm(path)
-  local state = read_state()
-  local changed = false
-  state.pinned = vim.tbl_filter(function(p)
-    if norm(p) == path then
+  local scanned = discover()
+  return with_state(function(state)
+    local changed = false
+    state.pinned = vim.tbl_filter(function(p)
+      if norm(p) == path then
+        changed = true
+        return false
+      end
+      return true
+    end, state.pinned)
+    local auto = vim.tbl_contains(scanned, path) or state.seen[path] ~= nil
+    if auto and not vim.tbl_contains(state.hidden, path) then
+      table.insert(state.hidden, path)
       changed = true
-      return false
     end
-    return true
-  end, state.pinned)
-  local auto = discover()
-  vim.list_extend(auto, vim.tbl_keys(state.seen))
-  if vim.tbl_contains(auto, path) and not vim.tbl_contains(state.hidden, path) then
-    table.insert(state.hidden, path)
-    changed = true
-  end
-  if changed then
-    write_state(state)
-  end
-  return changed
+    return changed, changed
+  end)
 end
 
 function M.pick()
@@ -359,12 +439,15 @@ function M.setup()
   end, { nargs = "?", complete = "dir", desc = "Remove a folder from the project list" })
   vim.api.nvim_create_user_command("ProjectRestore", M.restore, { desc = "Restore hidden projects" })
 
+  -- History is best effort: an unwritable state file must not break the rest of the config.
   -- setup() runs at VeryLazy, after VimEnter, so record the starting directory directly.
-  record()
+  pcall(record)
   vim.api.nvim_create_autocmd("DirChanged", {
     group = vim.api.nvim_create_augroup("projects_record", { clear = true }),
     pattern = "global",
-    callback = record,
+    callback = function()
+      pcall(record)
+    end,
   })
 end
 
