@@ -13,6 +13,7 @@ return {
     lazy = false,
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
+      debugger = { enabled = true, run_via_dap = true },
       widget_guides = { enabled = true },
       closing_tags = { enabled = true, prefix = "// " },
       dev_log = { enabled = true, open_cmd = "tabedit" },

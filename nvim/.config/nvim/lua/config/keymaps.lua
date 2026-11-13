@@ -61,6 +61,8 @@ vim.keymap.set("n", "<leader>gD", function()
   vim.cmd.startinsert()
 end, { desc = "Review changes (single diff)" })
 
+require("config.projects").setup()
+
 vim.keymap.set("n", "<leader>un", function()
   Snacks.notifier.show_history()
 end, { desc = "Notification History" })
