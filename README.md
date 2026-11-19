@@ -23,6 +23,7 @@ My personal dotfiles for macOS, managed with [GNU Stow](https://www.gnu.org/soft
 | `luvus` | AI agent terminal multiplexer |
 | `nvim` | Neovim editor |
 | `raycast` | Spotlight replacement |
+| `rex` | Terminal workspace keybindings |
 | `sketchybar` | Menu bar customizer |
 | `swiftpm` | Swift package manager |
 | `yazi` | File manager |
