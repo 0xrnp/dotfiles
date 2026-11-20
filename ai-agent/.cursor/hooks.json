@@ -44,6 +44,10 @@
       },
       {
         "command": "bash '/Users/rudranarayan/.cursor/herdr-agent-state.sh' session"
+      },
+      {
+        "command": "./hooks/agent-session-record.sh",
+        "timeout": 5
       }
     ],
     "stop": [

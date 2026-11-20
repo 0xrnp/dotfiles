@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# Pick saved Claude Code / Cursor CLI sessions and reopen them.
+#   agent-resume              picker (Enter resume, Tab multi-select, ctrl-d remove)
+#   agent-resume --tab SESSION  open the picker as a new Rex tab and show it
+#   agent-resume ls           list saved sessions
+#   agent-resume rm ID...     remove sessions from the list (agent data is untouched)
+# Sessions are recorded by agent-session-record at session start.
+set -u
+self="${BASH_SOURCE[0]}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/agent-resume"
+file="$state_dir/sessions.json"
+lock="$state_dir/.lock"
+
+# Select a window in every Rex app: each app keeps its own view and does not
+# follow the server's active window.
+select_in_apps() {
+  rex client ls --json \
+    | jq -r 'if type=="array" then .[] else (.clients // [])[] end | select(.info.kind=="app") | .client_id' \
+    | while read -r client; do
+        rex -C "$client" do session.select session_id="$1" window_id="$2" >/dev/null
+      done
+}
+
+# One saved session as a tab-separated row, or nothing when the agent no longer
+# has it (never prompted, or its data was deleted).
+# Fields: date, agent, title, short cwd, id, cwd
+row() {
+  local agent="$1" id="$2" cwd="$3" path mtime title tilde='~'
+  case "$agent" in
+    claude)
+      path="$(compgen -G "$HOME/.claude/projects/*/$id.jsonl" | head -n1)"
+      [ -n "$path" ] || return 0
+      title="$(grep -a '"type":"ai-title"' "$path" | tail -n1 | jq -r '.aiTitle // empty' 2>/dev/null)"
+      if [ -z "$title" ]; then
+        title="$(grep -a -m1 '"type":"user"' "$path" \
+          | jq -r '.message.content | if type=="array" then (map(select(.type=="text").text) | join(" ")) else . end' 2>/dev/null \
+          | tr '\n\t' '  ' | cut -c1-80)"
+      fi
+      ;;
+    cursor)
+      path="$(compgen -G "$HOME/.cursor/chats/*/$id/store.db" | head -n1)"
+      [ -n "$path" ] || return 0
+      title="$(sqlite3 "$path" 'select value from meta limit 1' 2>/dev/null | xxd -r -p 2>/dev/null | jq -r '.name // empty' 2>/dev/null)"
+      [ "$title" != "New Agent" ] || title=""
+      ;;
+    *) return 0 ;;
+  esac
+  mtime="$(stat -f %m "$path")"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$mtime" "$agent" "$(printf "%-48.48s" "${title:-untitled}")" "${cwd/#$HOME/$tilde}" "$id" "$cwd"
+}
+
+# Rows sorted newest first, with the date column formatted for display.
+rows() {
+  [ -s "$file" ] || return 0
+  jq -r '.[] | [.agent, .id, .cwd] | @tsv' "$file" \
+    | while IFS=$'\t' read -r agent id cwd; do row "$agent" "$id" "$cwd"; done \
+    | sort -rn \
+    | while IFS=$'\t' read -r mtime rest; do
+        printf '%s\t%s\n' "$(date -r "$mtime" '+%a %d %b %H:%M')" "$rest"
+      done
+}
+
+# Shell command that resumes a session in its folder.
+resume_command() {
+  case "$1" in
+    claude) printf 'cd %q && claude --resume %s' "$3" "$2" ;;
+    cursor) printf 'cd %q && cursor-agent --resume %s' "$3" "$2" ;;
+  esac
+}
+
+remove_ids() {
+  [ $# -gt 0 ] || return 0
+  local ids tmp locked="" _
+  ids="$(printf '%s\n' "$@" | jq -R . | jq -sc .)"
+  mkdir -p "$state_dir"
+  for _ in $(seq 40); do
+    if mkdir "$lock" 2>/dev/null; then locked=1; break; fi
+    sleep 0.05
+  done
+  tmp="$(mktemp "$state_dir/.sessions.XXXXXX")"
+  if jq --argjson ids "$ids" 'map(select(.id as $i | $ids | index($i) | not))' "$file" >"$tmp"; then
+    mv "$tmp" "$file"
+  else
+    rm -f "$tmp"
+  fi
+  [ -z "$locked" ] || rmdir "$lock" 2>/dev/null
+}
+
+case "${1:-}" in
+  --rows) rows; exit 0 ;;
+  ls) rows | cut -f1-5; exit 0 ;;
+  rm) shift; remove_ids "$@"; exit 0 ;;
+  cmd) shift; resume_command "$@"; exit 0 ;;
+  --tab)
+    tab="$(rex window new -s "$2" Resume --json -- "$self" | jq -r '.window_id')"
+    [ -z "$tab" ] || select_in_apps "$2" "$tab"
+    exit 0
+    ;;
+esac
+
+[ -n "$(rows)" ] || { echo "No saved sessions yet. They are saved when Claude or Cursor starts."; sleep 3; exit 0; }
+
+picked="$(rows | fzf --multi --delimiter=$'\t' --with-nth=1,2,3,4,5 --tabstop=12 --prompt 'resume> ' \
+  --bind "ctrl-d:execute-silent($self rm {+5})+reload($self --rows)+change-header(Removed from the list)" \
+  --bind "ctrl-y:execute-silent(printf %s {5} | pbcopy)+change-header(Copied session id)" \
+  --bind "ctrl-o:execute-silent($self cmd {2} {5} {6} | pbcopy)+change-header(Copied cd + resume command)" \
+  --header 'Enter: resume  Tab: select several  ctrl-d: remove from list  ctrl-y: copy id  ctrl-o: copy command')" || exit 0
+
+first_window=""
+while IFS=$'\t' read -r _ agent title _ id cwd; do
+  [ -n "$id" ] || continue
+  if [ ! -d "$cwd" ]; then
+    echo "Skipping $id: $cwd no longer exists"; sleep 2; continue
+  fi
+  case "$agent" in
+    claude) cmd=(claude --resume "$id") ;;
+    cursor) cmd=(cursor-agent --resume "$id") ;;
+  esac
+  if [ -n "${REX_SESSION:-}" ]; then
+    window="$(rex window new -s "$REX_SESSION" "${title:0:24}" -c "$cwd" --focus=false --json -- "${cmd[@]}" | jq -r '.window_id')"
+    [ -n "$first_window" ] || first_window="$window"
+  else
+    cd "$cwd" && exec "${cmd[@]}"
+  fi
+done <<<"$picked"
+
+# Focus after creating, so closing this picker tab does not move focus elsewhere.
+if [ -n "$first_window" ]; then
+  rex window focus "$first_window" -s "$REX_SESSION" >/dev/null
+  select_in_apps "$REX_SESSION" "$first_window"
+fi

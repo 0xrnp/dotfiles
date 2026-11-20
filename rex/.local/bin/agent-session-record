@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Session-start hook for Claude Code and Cursor CLI. Remembers which agent
+# session ran in which folder so agent-resume can reopen it later.
+# Usage: agent-session-record claude|cursor   (hook JSON on stdin)
+# Fails open: it must never block or noisy-fail an agent session start.
+set -u
+agent="${1:-}"
+case "$agent" in claude | cursor) ;; *) exit 0 ;; esac
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/agent-resume"
+file="$state_dir/sessions.json"
+lock="$state_dir/.lock"
+locked=""
+
+cleanup() {
+  [ -z "$locked" ] || rmdir "$lock" 2>/dev/null
+  # Cursor expects a JSON object back; Claude would treat stdout as context.
+  [ "$agent" != cursor ] || echo '{}'
+}
+trap cleanup EXIT
+
+input="$(cat)"
+mkdir -p "$state_dir"
+[ -s "$file" ] || echo '[]' >"$file"
+
+# Two sessions can start together and this is read-modify-write. mkdir is an
+# atomic lock; after ~2s go ahead without it rather than block the session.
+for _ in $(seq 40); do
+  if mkdir "$lock" 2>/dev/null; then locked=1; break; fi
+  sleep 0.05
+done
+
+tmp="$(mktemp "$state_dir/.sessions.XXXXXX")"
+if jq --argjson in "$input" --arg agent "$agent" --arg pwd "$PWD" --argjson now "$(date +%s)" '
+    ($in.session_id // $in.conversation_id // "") as $id
+    | ($in.cwd // $in.workspace_roots[0]? // $pwd) as $cwd
+    | if $id == "" then .
+      else
+        (map(select(.agent == $agent and .id == $id)) | .[0]) as $old
+        | map(select((.agent == $agent and .id == $id) | not))
+          + [{agent: $agent, id: $id, cwd: $cwd,
+              first_seen: ($old.first_seen // $now), last_seen: $now}]
+      end
+  ' "$file" >"$tmp" 2>/dev/null; then
+  mv "$tmp" "$file"
+else
+  rm -f "$tmp"
+fi
+exit 0

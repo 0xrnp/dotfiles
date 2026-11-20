@@ -32,3 +32,22 @@ for i = #keys, 1, -1 do
   }
   rex.bind("cmd+;>" .. keys[i], name)
 end
+
+-- cmd+; c opens the saved agent sessions picker (agent-resume) for Claude and
+-- Cursor in a new tab of the active session and shows it. The picker closes
+-- itself after it opens your picks.
+rex.action{
+  title = "Resume agent session",
+  name  = "resume_agent",
+  run   = function(ctx)
+    local proc = rex.exec.start({
+      "/bin/sh", "-c",
+      'rex="$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex"; ' ..
+      '[ -x "$rex" ] || rex="$(command -v rex)"; ' ..
+      'PATH="$(dirname "$rex"):$HOME/.local/bin:/opt/homebrew/bin:$PATH" exec "$HOME/.local/bin/agent-resume" --tab "$1"',
+      "sh", ctx.session_id,
+    })
+    proc:wait()
+  end,
+}
+rex.bind("cmd+;>c", "resume_agent")
