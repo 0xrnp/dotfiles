@@ -31,10 +31,11 @@ there is no ticket may proceed without one; no control token is required.
 2. Default base: `main` / `master` unless that would collide with active `staging` / `test` work. If unsure, say so and ask. Check recent activity on those remotes; do not guess.
 3. Name: `<ticket>-short-slug` when a ticket exists, otherwise the name Rudra gave.
 
-## Worktrees (Homes paths)
+## Worktrees
 
 When Rudra asks for a new worktree on a Homes repo, use
-`~/workspace/homes/worktrees/<repo>/<name>/` (example: `homes-api-app/topaz-plover`), not the generic `~/workspace/worktrees/...` path.
+`~/workspace/worktrees/<repo>/<name>/` (example: `homes-api-app/topaz-plover`).
+All workspace worktrees live under `~/workspace/worktrees/`, including Homes.
 
 Flutter worktrees are expensive (`pub get`, `build_runner`, CocoaPods). Use the
 open checkout unless Rudra or the host supplied a worktree, or isolation is
@@ -50,7 +51,7 @@ needed for concurrent work.
 
 ```bash
 git fetch
-git worktree add -b <branch> ~/workspace/homes/worktrees/<repo>/<name> origin/main
+git worktree add -b <branch> ~/workspace/worktrees/<repo>/<name> origin/main
 ```
 
 Use the repo's real default branch instead of `main` if it is `master`. After add: install deps in that worktree. For Flutter, say that `pub get` / codegen will run before you do it.

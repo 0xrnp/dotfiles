@@ -39,9 +39,9 @@ work only when concurrent edits or overlapping dirty files make that choice
 material. A worktree isolates Git state, not filesystem permissions.
 
 For a requested new worktree, default to
-`~/workspace/worktrees/<repo>/<name>/`. Homes repos use
-`~/workspace/homes/worktrees/<repo>/<name>/` and `homes-git` ticket and branch
-rules. Never silently move uncommitted main-checkout changes into a worktree.
+`~/workspace/worktrees/<repo>/<name>/` (Homes included). Homes repos still use
+`homes-git` ticket and branch rules. Never silently move uncommitted
+main-checkout changes into a worktree.
 
 ## Plan, then implement
 
@@ -279,6 +279,31 @@ execution for permission purposes.
 
 Do not commit, amend, push, create a PR, publish, deploy, or create/update a
 ticket unless explicitly requested.
+
+## Notes and docs placement
+
+Rudra's notes vault is `~/Obsidian`. When a task asks for a note, plan,
+research write-up, checklist, runbook, or draft that one repo does not own,
+write it there:
+
+- Unsorted or unsure: `Inbox/`. Work notes: `Work/<area>/`. Learning:
+  `Learning/`. Tech references: `Reference/`. Use `[[wikilinks]]`.
+- Repo docs appear in the vault as `Repos/<name>/`, symlinks to each repo's
+  `docs/`. Edit through the real repo path and never keep a second copy.
+- A document goes in a repo's `docs/` only when it is specific to that
+  project and should ship or be reviewed with its code (specs, contracts,
+  ADRs, handoffs). Repository instructions decide; follow them first.
+- Never write credentials, tokens, connection strings, or private commands to
+  the vault outside `Private/`, and never to a repo. `Private/` is git-ignored
+  and local only; do not read or quote it unless asked.
+- Do not commit or push the vault. It auto-commits locally and push is manual.
+- When Rudra asks to open or show a note, open it in Obsidian with the
+  `obsidian` CLI or an `obsidian://open?vault=Obsidian&file=<path>` link, not
+  an editor. `md` is an interactive shell function and is not available to
+  agents.
+- Do not rename, move, or delete existing vault notes unless asked.
+- This section says where a document goes. It does not authorize writing
+  documents the task did not ask for.
 
 ## Skills
 

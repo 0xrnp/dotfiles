@@ -149,7 +149,8 @@ for name in ("rust-best-practices", "rust-review", "rust-port"):
         )
 homes_git = (skills / "homes-git" / "SKILL.md").read_text()
 assert "Checkout gate" not in homes_git
-assert "~/workspace/homes/worktrees/<repo>/<name>/" in homes_git
+assert "~/workspace/worktrees/<repo>/<name>/" in homes_git
+assert "~/workspace/homes/worktrees/" not in homes_git
 
 config = json.loads((cursor / "hooks.json").read_text())
 hooks = config["hooks"]
