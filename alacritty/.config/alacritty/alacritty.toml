@@ -23,7 +23,7 @@ dynamic_title = true
 [font]
 size = 13
 builtin_box_drawing = true
-offset = { x = 1, y = 3 }
+offset = { x = 1, y = 7 }
 
 # [font.normal]
 # family = "JetBrainsMono Nerd Font"

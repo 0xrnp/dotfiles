@@ -41,7 +41,7 @@ font-feature = liga
 
 font-thicken = false
 
-adjust-cell-height = 18%
+adjust-cell-height = 35%
 adjust-underline-position = 2
 
 window-title-font-family = "Maple Mono NF"
