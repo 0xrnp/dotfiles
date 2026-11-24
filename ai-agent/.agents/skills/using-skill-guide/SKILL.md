@@ -42,6 +42,9 @@ repository code remain authoritative.
 | Branch, worktree, or ticket in Homes | `homes-git` |
 | Commit drafting, creation, or amend | `commit-authoring`; in Homes also `homes-git` |
 | PR drafting, preview, creation, or update | `pr-authoring`; in Homes also `homes-git` |
+| Review comments on Rudra's own Bitbucket PR, report only | `pr-feedback` |
+| Fix comments on Rudra's own PR (local edits only) | `pr-feedback-fix` |
+| Reply to and resolve comments on Rudra's own PR after fixes are pushed | `pr-feedback-resolve` |
 | Review someone else's Bitbucket PR (read-only) | `pr-review`; stack/domain skills as needed |
 | Review and post Bitbucket PR comments in one step | `pr-review-and-comment` |
 | Post finalized Bitbucket PR comments after discussion | `add-pr-comments` |
